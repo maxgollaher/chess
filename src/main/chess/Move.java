@@ -1,6 +1,6 @@
 package chess;
 
-public class ChessMoveImpl implements ChessMove {
+public class Move implements ChessMove {
     /**
      * @return ChessPosition of starting location
      */

@@ -1,13 +1,22 @@
 package chess;
 
-public class ChessPositionImpl implements ChessPosition {
+public class Position implements ChessPosition {
+
+    private final int row;
+    private final int column;
+
+    public Position(int row, int column) {
+        this.row = row - 1;
+        this.column = column - 1;
+    }
+
     /**
      * @return which row this position is in
      * 1 codes for the bottom row
      */
     @Override
     public int getRow() {
-        return 0;
+        return row;
     }
 
     /**
@@ -16,6 +25,6 @@ public class ChessPositionImpl implements ChessPosition {
      */
     @Override
     public int getColumn() {
-        return 0;
+        return column;
     }
 }

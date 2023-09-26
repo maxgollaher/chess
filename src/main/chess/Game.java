@@ -2,7 +2,7 @@ package chess;
 
 import java.util.Collection;
 
-public class ChessGameImpl implements ChessGame {
+public class Game implements ChessGame {
     /**
      * @return Which team's turn it is
      */
