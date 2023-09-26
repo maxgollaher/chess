@@ -1,3 +1,7 @@
+### Exclude 3rd Party Library .jars ###
+*.jar
+
+
 ### IntelliJ IDEA ###
 out/
 !**/src/main/**/out/
