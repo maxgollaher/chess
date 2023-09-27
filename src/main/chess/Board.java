@@ -9,7 +9,6 @@ public class Board implements ChessBoard {
 
     public Board() {
         this.board = new ChessPiece[8][8];
-        resetBoard();
     }
 
     /**
@@ -20,8 +19,8 @@ public class Board implements ChessBoard {
      */
     @Override
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        var row = position.getRow();
-        var column = position.getColumn();
+        var row = position.getRow() - 1;
+        var column = position.getColumn() - 1;
         board[row][column] = piece;
     }
 
@@ -33,8 +32,8 @@ public class Board implements ChessBoard {
      */
     @Override
     public ChessPiece getPiece(ChessPosition position) {
-        var row = position.getRow();
-        var column = position.getColumn();
+        var row = position.getRow() - 1;
+        var column = position.getColumn() - 1;
         return board[row][column];
     }
 

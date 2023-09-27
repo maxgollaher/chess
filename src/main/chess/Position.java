@@ -6,8 +6,8 @@ public class Position implements ChessPosition {
     private final int column;
 
     public Position(int row, int column) {
-        this.row = row - 1;
-        this.column = column - 1;
+        this.row = row;
+        this.column = column;
     }
 
     /**
@@ -26,5 +26,13 @@ public class Position implements ChessPosition {
     @Override
     public int getColumn() {
         return column;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj instanceof Position other)
+            return row == other.row && column == other.column;
+        return false;
     }
 }

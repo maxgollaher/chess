@@ -23,13 +23,12 @@ public class TestFactory {
 		return new Piece(pieceColor, type);
     }
 
-    public static ChessPosition getNewPosition(Integer row, Integer col){
-		return new Position(row, col);
+    public static ChessPosition getNewPosition(Integer row, Integer col) {
+        return new Position(row, col);
     }
 
     public static ChessMove getNewMove(ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece){
-        // FIXME
-		return null;
+        return new Move(startPosition, endPosition, promotionPiece);
     }
     //------------------------------------------------------------------------------------------------------------------
 

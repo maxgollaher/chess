@@ -3,12 +3,16 @@ package chess;
 import java.util.Collection;
 
 public class Game implements ChessGame {
+
+    private TeamColor teamTurn;
+    private ChessBoard board;
+
     /**
      * @return Which team's turn it is
      */
     @Override
     public TeamColor getTeamTurn() {
-        return null;
+        return teamTurn;
     }
 
     /**
@@ -18,7 +22,7 @@ public class Game implements ChessGame {
      */
     @Override
     public void setTeamTurn(TeamColor team) {
-
+        teamTurn = team;
     }
 
     /**
