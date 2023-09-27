@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -33,7 +34,6 @@ public class Piece implements ChessPiece {
 
     private final ChessGame.TeamColor teamColor;
     private final PieceType pieceType;
-    private boolean hasMoved = false;
 
     public Piece(ChessGame.TeamColor teamColor, PieceType pieceType) {
         this.teamColor = teamColor;
@@ -103,6 +103,11 @@ public class Piece implements ChessPiece {
     }
 
 
+    /**
+     * @param board the board
+     * @param myPosition the position of the pawn
+     * @return a set of valid moves for a pawn, excluding en passant
+     */
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
 
         Set<ChessMove> validMoves = new HashSet<>();
@@ -122,8 +127,8 @@ public class Piece implements ChessPiece {
                 if ((position.equals(forwardOne) || position.equals(forwardTwo)) && board.getPiece(position) != null) {
                     continue;
                 }
-                // block forward two if not on initial row
-                if (position.equals(forwardTwo) && myPosition.getRow() != initialRow) {
+                // block forwardTwo if not on initial row, or validMoves is empty, meaning forwardOne was not valid
+                if (position.equals(forwardTwo) && myPosition.getRow() != initialRow || (validMoves.isEmpty() && position.equals(forwardTwo))) {
                     continue;
                 }
                 // block capture if no piece to capture
@@ -140,7 +145,6 @@ public class Piece implements ChessPiece {
                 }
             }
         }
-
         return validMoves;
     }
 
@@ -156,6 +160,9 @@ public class Piece implements ChessPiece {
         var position = new Position(myPosition.getRow() + direction.getRowChange(), myPosition.getColumn() + direction.getColChange());
         while (isValidMove(board, myPosition, position)) {
             validMoves.add(new Move(myPosition, position));
+            if (board.getPiece(position) != null && board.getPiece(myPosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                break; // break if capture
+            }
             position = new Position(position.getRow() + direction.getRowChange(), position.getColumn() + direction.getColChange());
         }
     }
@@ -213,5 +220,17 @@ public class Piece implements ChessPiece {
         return getChessMoves(board, myPosition, validMoves, positions);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Piece piece = (Piece) o;
+        return teamColor == piece.teamColor && pieceType == piece.pieceType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(teamColor, pieceType);
+    }
 }
 

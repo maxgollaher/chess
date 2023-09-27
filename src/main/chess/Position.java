@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Objects;
+
 public class Position implements ChessPosition {
 
     private final int row;
@@ -34,5 +36,10 @@ public class Position implements ChessPosition {
         if (obj instanceof Position other)
             return row == other.row && column == other.column;
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(row, column);
     }
 }
