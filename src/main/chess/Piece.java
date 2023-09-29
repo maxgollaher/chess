@@ -104,7 +104,7 @@ public class Piece implements ChessPiece {
 
 
     /**
-     * @param board the board
+     * @param board      the board
      * @param myPosition the position of the pawn
      * @return a set of valid moves for a pawn, excluding en passant
      */

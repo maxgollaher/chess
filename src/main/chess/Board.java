@@ -11,6 +11,7 @@ public class Board implements ChessBoard {
         this.board = new ChessPiece[8][8];
     }
 
+
     /**
      * Adds a chess piece to the chessboard
      *

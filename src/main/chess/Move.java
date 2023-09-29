@@ -50,7 +50,7 @@ public class Move implements ChessMove {
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj instanceof Move other)
-            return startPosition.equals(other.startPosition) && endPosition.equals(other.endPosition) && promotionPiece == other.promotionPiece;
+            return startPosition.equals(other.startPosition) && endPosition.equals(other.endPosition);
         return false;
     }
 

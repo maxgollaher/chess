@@ -14,9 +14,8 @@ public class TestFactory {
         return new Board();
     }
 
-    public static ChessGame getNewGame(){
-        // FIXME
-		return null;
+    public static ChessGame getNewGame() {
+		return new Game();
     }
 
     public static ChessPiece getNewPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type){
