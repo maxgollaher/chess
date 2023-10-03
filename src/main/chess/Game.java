@@ -1,5 +1,6 @@
 package chess;
 
+import java.security.Permission;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -48,8 +49,16 @@ public class Game implements ChessGame {
         if (enPassantMove != null) {
             validMoves.add(enPassantMove);
         }
-//        validMoves.add(castleMoves(startPosition));
+        Set<ChessMove> castleMove = new HashSet<>(castleMoves(startPosition));
+        if (!castleMove.isEmpty()) {
+            validMoves.addAll(castleMove);
+        }
         // always check if moves put the king into check
+        removeIfCheck(validMoves);
+        return validMoves;
+    }
+
+    private void removeIfCheck(Set<ChessMove> validMoves) {
         validMoves.removeIf(move -> {
             // swap places, call isInCheck, remove if in check after swapping back.
             var fromPiece = board.getPiece(move.getStartPosition());
@@ -61,7 +70,72 @@ public class Game implements ChessGame {
             board.addPiece(move.getEndPosition(), toPiece);
             return isInCheck;
         });
-        return validMoves;
+    }
+
+    private Collection<ChessMove> castleMoves(ChessPosition startPosition) {
+        var piece = board.getPiece(startPosition);
+
+        // if the piece is not a king or the king has moved, no castling
+        if (piece.getPieceType() != KING || hasMoved.contains(piece)) {
+            return new HashSet<>();
+        }
+
+        // if for some reason the king is not on the correct position, no castling
+        // this only matters for testing purposes
+        var kingRow = piece.getTeamColor() == TeamColor.WHITE ? 1 : 8;
+        if (startPosition.getColumn() != 5 || startPosition.getRow() != kingRow) {
+            return new HashSet<>();
+        }
+
+        // if the king is in check, no castling
+        if (isInCheck(piece.getTeamColor())) {
+            return new HashSet<>();
+        }
+
+        var baseRow = startPosition.getRow();
+        var kingCol = startPosition.getColumn();
+        var leftRook = board.getPiece(new Position(baseRow, 1));
+        var rightRook = board.getPiece(new Position(baseRow, 8));
+
+        // check for empty spaces between king and leftRook
+        boolean leftEmpty = true;
+        boolean rightEmpty = true;
+        for (int i = 2; i < kingCol; i++) {
+            if (board.getPiece(new Position(baseRow, i)) != null) {
+                leftEmpty = false;
+            }
+        }
+        for (int i = 7; i > kingCol; i--) {
+            if (board.getPiece(new Position(baseRow, i)) != null) {
+                rightEmpty = false;
+            }
+        }
+        // if both sides are not empty, don't continue
+        if (!leftEmpty && !rightEmpty) {
+            return new HashSet<>();
+        }
+        Set<ChessMove> shortMoves = new HashSet<>();
+        var leftMove = new Move(startPosition, new Position(baseRow, kingCol - 1));
+        var rightMove = new Move(startPosition, new Position(baseRow, kingCol + 1));
+        if (leftEmpty) {
+            shortMoves.add(leftMove);
+        }
+        if (rightEmpty) {
+            shortMoves.add(rightMove);
+        }
+        removeIfCheck(shortMoves);
+        if (shortMoves.isEmpty()) {
+            return new HashSet<>();
+        }
+
+        Set<ChessMove> result = new HashSet<>();
+        if (shortMoves.contains(leftMove) && !hasMoved.contains(leftRook)) {
+            result.add(new Move(startPosition, new Position(baseRow, kingCol - 2)));
+        }
+        if (shortMoves.contains(rightMove) && !hasMoved.contains(rightRook)) {
+            result.add(new Move(startPosition, new Position(baseRow, kingCol + 2)));
+        }
+        return result;
     }
 
     /**
@@ -135,6 +209,7 @@ public class Game implements ChessGame {
             }
 
             handleEnPassant(move, originalPiece);
+            handleCastle(move, originalPiece);
 
             if (promotionPiece == null) {
                 board.addPiece(move.getEndPosition(), originalPiece);
@@ -149,6 +224,20 @@ public class Game implements ChessGame {
             teamTurn = teamTurn == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
         } else {
             throw new InvalidMoveException();
+        }
+    }
+
+    private void handleCastle(ChessMove move, ChessPiece originalPiece) {
+        if (originalPiece.getPieceType() == KING) {
+            if (move.getEndPosition().getColumn() == 7) {
+                board.addPiece(new Position(move.getStartPosition().getRow(), 6), board.getPiece(new Position(move.getStartPosition().getRow(), 1)));
+                hasMoved.add(board.getPiece(new Position(move.getStartPosition().getRow(), 6)));
+                board.addPiece(new Position(move.getStartPosition().getRow(), 8), null);
+            } else if (move.getEndPosition().getColumn() == 3) {
+                board.addPiece(new Position(move.getStartPosition().getRow(), 4), board.getPiece(new Position(move.getStartPosition().getRow(), 8)));
+                hasMoved.add(board.getPiece(new Position(move.getStartPosition().getRow(), 4)));
+                board.addPiece(new Position(move.getStartPosition().getRow(), 1), null);
+            }
         }
     }
 
@@ -241,6 +330,8 @@ public class Game implements ChessGame {
     @Override
     public void setBoard(ChessBoard board) {
         this.board = board;
+        hasMoved = new HashSet<>(); // reset hasMoved for testing purposes
+        isEnPassant = null;
     }
 
     /**

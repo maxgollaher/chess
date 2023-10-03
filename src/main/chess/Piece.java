@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 enum Direction {
@@ -34,6 +35,10 @@ public class Piece implements ChessPiece {
 
     private final ChessGame.TeamColor teamColor;
     private final PieceType pieceType;
+
+    private static AtomicInteger counter = new AtomicInteger(0);
+
+    private final int id = counter.getAndIncrement();
 
     public Piece(ChessGame.TeamColor teamColor, PieceType pieceType) {
         this.teamColor = teamColor;
@@ -225,12 +230,12 @@ public class Piece implements ChessPiece {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Piece piece = (Piece) o;
-        return teamColor == piece.teamColor && pieceType == piece.pieceType;
+        return teamColor == piece.teamColor && pieceType == piece.pieceType && id == piece.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(teamColor, pieceType);
+        return Objects.hash(teamColor, pieceType, id);
     }
 }
 
