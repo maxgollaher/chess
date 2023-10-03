@@ -1,12 +1,9 @@
 package chess;
 
-import java.security.Permission;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static chess.ChessPiece.PieceType.KING;
-import static chess.ChessPiece.PieceType.ROOK;
 import static java.lang.Math.abs;
 
 public class Game implements ChessGame {
@@ -58,6 +55,11 @@ public class Game implements ChessGame {
         return validMoves;
     }
 
+    /**
+     * Removes moves that put the king into check from a set of moves
+     *
+     * @param validMoves the set of moves to remove from
+     */
     private void removeIfCheck(Set<ChessMove> validMoves) {
         validMoves.removeIf(move -> {
             // swap places, call isInCheck, remove if in check after swapping back.
@@ -72,11 +74,15 @@ public class Game implements ChessGame {
         });
     }
 
+    /**
+     * @param startPosition the piece to get valid moves for
+     * @return a valid castle move
+     */
     private Collection<ChessMove> castleMoves(ChessPosition startPosition) {
         var piece = board.getPiece(startPosition);
 
         // if the piece is not a king or the king has moved, no castling
-        if (piece.getPieceType() != KING || hasMoved.contains(piece)) {
+        if (piece.getPieceType() != ChessPiece.PieceType.KING || hasMoved.contains(piece)) {
             return new HashSet<>();
         }
 
@@ -176,7 +182,7 @@ public class Game implements ChessGame {
                 var position = new Position(i, j);
                 var piece = board.getPiece(position);
                 if (piece == null) continue;
-                if (piece.getPieceType().equals(KING) && piece.getTeamColor().equals(teamColor)) {
+                if (piece.getPieceType().equals(ChessPiece.PieceType.KING) && piece.getTeamColor().equals(teamColor)) {
                     return position;
                 }
             }
@@ -227,8 +233,9 @@ public class Game implements ChessGame {
         }
     }
 
+    /* Handles castling by moving the rook to the correct position */
     private void handleCastle(ChessMove move, ChessPiece originalPiece) {
-        if (originalPiece.getPieceType() == KING) {
+        if (originalPiece.getPieceType() == ChessPiece.PieceType.KING) {
             if (move.getEndPosition().getColumn() == 7) {
                 board.addPiece(new Position(move.getStartPosition().getRow(), 6), board.getPiece(new Position(move.getStartPosition().getRow(), 1)));
                 hasMoved.add(board.getPiece(new Position(move.getStartPosition().getRow(), 6)));
@@ -241,6 +248,7 @@ public class Game implements ChessGame {
         }
     }
 
+    /* Handles en passant by removing the captured pawn */
     private void handleEnPassant(ChessMove move, ChessPiece originalPiece) {
         if (originalPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
             var direction = originalPiece.getTeamColor() == TeamColor.WHITE ? 1 : -1;
