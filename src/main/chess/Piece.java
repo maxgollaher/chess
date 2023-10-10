@@ -237,5 +237,11 @@ public class Piece implements ChessPiece {
     public int hashCode() {
         return Objects.hash(teamColor, pieceType, id);
     }
+
+    @Override
+    public String toString() {
+        return teamColor.name() + " " + pieceType.name();
+    }
+
 }
 
