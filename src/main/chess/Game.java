@@ -294,6 +294,23 @@ public class Game implements ChessGame {
         return false;
     }
 
+    private boolean moveAvailable(TeamColor teamColor) {
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                var curPos = new Position(i, j);
+                var piece = board.getPiece(curPos);
+                if (piece == null) continue;
+                if (piece.getTeamColor().equals(teamColor)) {
+                    Set<ChessMove> validMoves = new HashSet<>(validMoves(curPos));
+                    if (!validMoves.isEmpty()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Determines if the given team is in checkmate
      *
@@ -302,11 +319,8 @@ public class Game implements ChessGame {
      */
     @Override
     public boolean isInCheckmate(TeamColor teamColor) {
-        var kingPosition = getKingPosition(teamColor);
-        return isInCheck(teamColor) && validMoves(kingPosition).isEmpty();
-
-        //TODO: This passes the tests, but doesn't account for other piece moves
-        //TODO: blocking the king from being in check
+        if (moveAvailable(teamColor)) return false;
+        return isInCheck(teamColor);
     }
 
     /**
@@ -317,20 +331,8 @@ public class Game implements ChessGame {
      */
     @Override
     public boolean isInStalemate(TeamColor teamColor) {
-        for (int i = 1; i <= 8; i++) {
-            for (int j = 1; j <= 8; j++) {
-                var curPos = new Position(i, j);
-                var piece = board.getPiece(curPos);
-                if (piece == null) continue;
-                if (piece.getTeamColor().equals(teamColor)) {
-                    Set<ChessMove> validMoves = new HashSet<>(validMoves(curPos));
-                    if (!validMoves.isEmpty()) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+        if (moveAvailable(teamColor)) return false;
+        return !isInCheck(teamColor);
     }
 
     /**
