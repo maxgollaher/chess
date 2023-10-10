@@ -30,6 +30,7 @@ public class Position implements ChessPosition {
         return column;
     }
 
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;

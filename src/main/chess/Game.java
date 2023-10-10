@@ -304,6 +304,9 @@ public class Game implements ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         var kingPosition = getKingPosition(teamColor);
         return isInCheck(teamColor) && validMoves(kingPosition).isEmpty();
+
+        //TODO: This passes the tests, but doesn't account for other piece moves
+        //TODO: blocking the king from being in check
     }
 
     /**
