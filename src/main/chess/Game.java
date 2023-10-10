@@ -209,8 +209,7 @@ public class Game implements ChessGame {
             var promotionPiece = move.getPromotionPiece();
 
             // add the piece to the hasMoved set, preventing castling
-            if (originalPiece.getPieceType() == ChessPiece.PieceType.KING ||
-                    originalPiece.getPieceType() == ChessPiece.PieceType.ROOK) {
+            if (originalPiece.getPieceType() == ChessPiece.PieceType.KING || originalPiece.getPieceType() == ChessPiece.PieceType.ROOK) {
                 hasMoved.add(originalPiece);
             }
 
@@ -257,8 +256,7 @@ public class Game implements ChessGame {
             }
         }
         // only set en passant for one turn
-        if (originalPiece.getPieceType() == ChessPiece.PieceType.PAWN &&
-                (abs(move.getStartPosition().getRow() - move.getEndPosition().getRow()) == 2)) {
+        if (originalPiece.getPieceType() == ChessPiece.PieceType.PAWN && (abs(move.getStartPosition().getRow() - move.getEndPosition().getRow()) == 2)) {
             this.isEnPassant = originalPiece;
         } else {
             this.isEnPassant = null;
@@ -336,6 +334,16 @@ public class Game implements ChessGame {
     }
 
     /**
+     * Gets the current chessboard
+     *
+     * @return the chessboard
+     */
+    @Override
+    public ChessBoard getBoard() {
+        return board;
+    }
+
+    /**
      * Sets this game's chessboard with a given board
      *
      * @param board the new board to use
@@ -345,15 +353,5 @@ public class Game implements ChessGame {
         this.board = board;
         hasMoved = new HashSet<>(); // reset hasMoved for testing purposes
         isEnPassant = null;
-    }
-
-    /**
-     * Gets the current chessboard
-     *
-     * @return the chessboard
-     */
-    @Override
-    public ChessBoard getBoard() {
-        return board;
     }
 }

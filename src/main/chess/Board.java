@@ -1,6 +1,7 @@
 package chess;
 
-import static chess.ChessGame.TeamColor.*;
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
 import static chess.ChessPiece.PieceType.*;
 
 public class Board implements ChessBoard {
@@ -54,27 +55,9 @@ public class Board implements ChessBoard {
     private ChessPiece[] setRow(ChessGame.TeamColor color, boolean isBackRow) {
         ChessPiece[] row;
         if (isBackRow) {
-            row = new ChessPiece[]{
-                    new Piece(color, ROOK),
-                    new Piece(color, KNIGHT),
-                    new Piece(color, BISHOP),
-                    new Piece(color, QUEEN),
-                    new Piece(color, KING),
-                    new Piece(color, BISHOP),
-                    new Piece(color, KNIGHT),
-                    new Piece(color, ROOK)
-            };
+            row = new ChessPiece[]{new Piece(color, ROOK), new Piece(color, KNIGHT), new Piece(color, BISHOP), new Piece(color, QUEEN), new Piece(color, KING), new Piece(color, BISHOP), new Piece(color, KNIGHT), new Piece(color, ROOK)};
         } else {
-            row = new ChessPiece[]{
-                    new Piece(color, PAWN),
-                    new Piece(color, PAWN),
-                    new Piece(color, PAWN),
-                    new Piece(color, PAWN),
-                    new Piece(color, PAWN),
-                    new Piece(color, PAWN),
-                    new Piece(color, PAWN),
-                    new Piece(color, PAWN),
-            };
+            row = new ChessPiece[]{new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN),};
         }
         return row;
     }

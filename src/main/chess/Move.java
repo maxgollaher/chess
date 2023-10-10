@@ -8,14 +8,6 @@ public class Move implements ChessMove {
     private final ChessPosition endPosition;
     private final ChessPiece.PieceType promotionPiece;
 
-    @Override
-    public String toString() {
-        return "Move{" + startPosition +
-                ", " + endPosition +
-                ", promotionPiece=" + promotionPiece +
-                '}';
-    }
-
     public Move(ChessPosition startPosition, ChessPosition endPosition) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
@@ -26,6 +18,11 @@ public class Move implements ChessMove {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
         this.promotionPiece = promotionPiece;
+    }
+
+    @Override
+    public String toString() {
+        return "Move{" + startPosition + ", " + endPosition + ", promotionPiece=" + promotionPiece + '}';
     }
 
     /**

@@ -33,11 +33,9 @@ enum Direction {
 
 public class Piece implements ChessPiece {
 
+    private static final AtomicInteger counter = new AtomicInteger(0);
     private final ChessGame.TeamColor teamColor;
     private final PieceType pieceType;
-
-    private static AtomicInteger counter = new AtomicInteger(0);
-
     private final int id = counter.getAndIncrement();
 
     public Piece(ChessGame.TeamColor teamColor, PieceType pieceType) {

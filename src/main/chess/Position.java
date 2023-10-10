@@ -38,8 +38,7 @@ public class Position implements ChessPosition {
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
-        if (obj instanceof Position other)
-            return row == other.row && column == other.column;
+        if (obj instanceof Position other) return row == other.row && column == other.column;
         return false;
     }
 
