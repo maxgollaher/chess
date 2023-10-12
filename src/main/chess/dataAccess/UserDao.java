@@ -1,4 +1,5 @@
 package chess.dataAccess;
 
-public class UserDAO {
+public class UserDao {
+
 }

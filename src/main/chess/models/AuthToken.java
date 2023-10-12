@@ -6,6 +6,9 @@ public class AuthToken {
     private String authToken;
     private String username;
 
+    public AuthToken() {
+    }
+
     public AuthToken(String authToken, String username) {
         this.authToken = authToken;
         this.username = username;
