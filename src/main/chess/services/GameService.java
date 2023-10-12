@@ -1,5 +1,6 @@
 package chess.services;
 
+import chess.dataAccess.GameDao;
 import chess.services.requests.CreateGameRequest;
 import chess.services.requests.JoinGameRequest;
 import chess.services.responses.CreateGameResponse;
@@ -7,6 +8,8 @@ import chess.services.responses.ListGamesResponse;
 import dataAccess.DataAccessException;
 
 public class GameService {
+
+    private GameDao gameDao;
 
     public void joinGame(JoinGameRequest request) throws DataAccessException {
         // TODO implement here

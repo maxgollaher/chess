@@ -7,7 +7,6 @@ public class LoginRequest {
     public LoginRequest(String username, String password) {
         this.username = username;
         this.password = password;
-        // TODO implement here
     }
 
     public String getUsername() {

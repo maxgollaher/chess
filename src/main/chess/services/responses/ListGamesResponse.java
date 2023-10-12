@@ -2,18 +2,20 @@ package chess.services.responses;
 
 import chess.models.Game;
 
-public class ListGamesResponse {
-    private Game[] games;
+import java.util.List;
 
-    public ListGamesResponse(Game[] games) {
+public class ListGamesResponse {
+    private List<Game> games;
+
+    public ListGamesResponse(List<Game> games) {
         this.games = games;
     }
 
-    public Game[] getGames() {
+    public List<Game> getGames() {
         return games;
     }
 
-    public void setGames(Game[] games) {
+    public void setGames(List<Game> games) {
         this.games = games;
     }
 }
