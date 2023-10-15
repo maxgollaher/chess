@@ -6,6 +6,9 @@ public class UserDao {
     private UserDao() {}
 
     public static UserDao getInstance() {
+        if (instance == null) {
+            instance = new UserDao();
+        }
         return instance;
     }
 

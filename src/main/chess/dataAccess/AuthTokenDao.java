@@ -6,6 +6,10 @@ public class AuthTokenDao {
     private AuthTokenDao() {}
 
     public static AuthTokenDao getInstance() {
+        if (instance == null) {
+            instance = new AuthTokenDao();
+        }
         return instance;
     }
+
 }
