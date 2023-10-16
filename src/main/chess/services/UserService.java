@@ -1,7 +1,9 @@
 package chess.services;
 
+import chess.dataAccess.AuthTokenDao;
 import chess.dataAccess.UserDao;
 import chess.models.AuthToken;
+import chess.models.User;
 import chess.services.requests.RegisterRequest;
 import chess.services.responses.LoginResponse;
 import dataAccess.DataAccessException;
@@ -13,17 +15,23 @@ import dataAccess.DataAccessException;
 public class UserService {
 
     /**
-     * The {@link UserDao} to be used to access the database
+     * The {@link UserDao} to be used to access the {@link User} database
      */
     private UserDao userDao;
 
     /**
+     * The {@link AuthTokenDao} to be used to access the {@link AuthToken} database
+     */
+    private AuthTokenDao authTokenDao;
+
+    /**
      * Registers a new user based on a given RegisterRequest
+     *
      * @param request a {@link RegisterRequest} to register a new user, which contains
      *                the username, password, and email
      * @return a {@link LoginResponse} containing the username and {@link AuthToken}
      * @throws DataAccessException if there is an error accessing the database or if the
-     * username/email is already taken.
+     *                             username/email is already taken.
      */
     public LoginResponse register(RegisterRequest request) throws DataAccessException {
         // TODO implement here

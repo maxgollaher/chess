@@ -1,8 +1,23 @@
 package chess.services.responses;
 
+import chess.services.GameService;
+import chess.services.requests.CreateGameRequest;
+
+/**
+ * Response object for the {@link GameService#createGame(CreateGameRequest)} method.
+ */
 public class CreateGameResponse {
+
+    /**
+     * The id of the game that was created.
+     */
     private int gameId;
 
+    /**
+     * Creates a new CreateGameResponse object.
+     *
+     * @param gameId the id of the game that was created.
+     */
     public CreateGameResponse(int gameId) {
         this.gameId = gameId;
     }

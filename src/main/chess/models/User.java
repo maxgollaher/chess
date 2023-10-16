@@ -2,13 +2,38 @@ package chess.models;
 
 import java.util.Objects;
 
+/**
+ * Represents a user. Contains the username, password, and email of the user.
+ */
 public class User {
+
+    /**
+     * The username of the user.
+     */
     private String username;
+
+    /**
+     * The password of the user.
+     */
     private String password;
+
+    /**
+     * The email of the user.
+     */
     private String email;
 
+    /**
+     * Blank constructor for User, used to create null User objects if needed.
+     */
     public User() {}
 
+    /**
+     * Creates a new User object.
+     *
+     * @param username the username of the user.
+     * @param password the password of the user.
+     * @param email    the email of the user.
+     */
     public User(String username, String password, String email) {
         this.username = username;
         this.password = password;

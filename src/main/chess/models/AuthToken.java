@@ -2,13 +2,32 @@ package chess.models;
 
 import java.util.Objects;
 
+/**
+ * Represents an authentication token. Contains the token itself and the username of the user it belongs to.
+ */
 public class AuthToken {
+
+    /**
+     * The authentication token.
+     */
     private String authToken;
+
+    /**
+     * The username of the user that the token belongs to.
+     */
     private String username;
 
-    public AuthToken() {
-    }
+    /**
+     * Blank constructor for AuthToken, used to create null AuthToken objects if needed.
+     */
+    public AuthToken() {}
 
+    /**
+     * Creates a new AuthToken object.
+     *
+     * @param authToken the authentication token.
+     * @param username the username of the user that the token belongs to.
+     */
     public AuthToken(String authToken, String username) {
         this.authToken = authToken;
         this.username = username;
