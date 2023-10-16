@@ -94,6 +94,7 @@ public class AuthTokenDao {
 
     /**
      * Clears all authTokens from the database
+     *
      * @throws DataAccessException if there is an error accessing the database
      */
     public void clear() throws DataAccessException {

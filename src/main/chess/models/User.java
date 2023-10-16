@@ -25,7 +25,8 @@ public class User {
     /**
      * Blank constructor for User, used to create null User objects if needed.
      */
-    public User() {}
+    public User() {
+    }
 
     /**
      * Creates a new User object.

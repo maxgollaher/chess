@@ -22,7 +22,7 @@ public class CreateGameRequest {
      * Creates a new CreateGameRequest object.
      *
      * @param authToken the {@link AuthToken} of the user that is creating the game.
-     * @param GameName the name of the game that is being created.
+     * @param GameName  the name of the game that is being created.
      */
     public CreateGameRequest(AuthToken authToken, String GameName) {
         this.authToken = authToken;

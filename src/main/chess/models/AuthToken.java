@@ -20,13 +20,14 @@ public class AuthToken {
     /**
      * Blank constructor for AuthToken, used to create null AuthToken objects if needed.
      */
-    public AuthToken() {}
+    public AuthToken() {
+    }
 
     /**
      * Creates a new AuthToken object.
      *
      * @param authToken the authentication token.
-     * @param username the username of the user that the token belongs to.
+     * @param username  the username of the user that the token belongs to.
      */
     public AuthToken(String authToken, String username) {
         this.authToken = authToken;

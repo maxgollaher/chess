@@ -1,7 +1,11 @@
 package chess.services;
 
-import chess.dataAccess.*;
-import chess.models.*;
+import chess.dataAccess.AuthTokenDao;
+import chess.dataAccess.GameDao;
+import chess.dataAccess.UserDao;
+import chess.models.AuthToken;
+import chess.models.Game;
+import chess.models.User;
 import dataAccess.DataAccessException;
 
 /**
@@ -29,6 +33,7 @@ public class AdminService {
     /**
      * Clears all data from the database. This is used for testing purposes, and no
      * authentication is required.
+     *
      * @throws DataAccessException if there is an error accessing the database
      */
     public void clearDatabase() throws DataAccessException {

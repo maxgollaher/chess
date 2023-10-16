@@ -115,6 +115,7 @@ public class GameDao {
 
     /**
      * Clears the database of all games
+     *
      * @throws DataAccessException if there is an error accessing the database
      */
     public void clear() throws DataAccessException {
