@@ -1,7 +1,7 @@
-package chess.services.requests;
+package services.requests;
 
-import chess.models.AuthToken;
-import chess.services.GameService;
+import models.AuthToken;
+import services.GameService;
 
 /**
  * Request object for the {@link GameService#createGame(CreateGameRequest)} method.
@@ -16,25 +16,25 @@ public class CreateGameRequest {
     /**
      * The name of the game that is being created.
      */
-    private String GameName;
+    private String gameName;
 
     /**
      * Creates a new CreateGameRequest object.
      *
      * @param authToken the {@link AuthToken} of the user that is creating the game.
-     * @param GameName  the name of the game that is being created.
+     * @param gameName  the name of the game that is being created.
      */
-    public CreateGameRequest(AuthToken authToken, String GameName) {
+    public CreateGameRequest(AuthToken authToken, String gameName) {
         this.authToken = authToken;
-        this.GameName = GameName;
+        this.gameName = gameName;
     }
 
     public String getGameName() {
-        return GameName;
+        return gameName;
     }
 
-    public void setGameName(String GameName) {
-        this.GameName = GameName;
+    public void setGameName(String gameName) {
+        this.gameName = gameName;
     }
 
     public AuthToken getAuthToken() {

@@ -1,8 +1,8 @@
-package chess.services.responses;
+package services.responses;
 
-import chess.models.AuthToken;
-import chess.models.Game;
-import chess.services.GameService;
+import models.AuthToken;
+import models.Game;
+import services.GameService;
 
 import java.util.ArrayList;
 

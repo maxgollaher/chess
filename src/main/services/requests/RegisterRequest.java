@@ -1,6 +1,6 @@
-package chess.services.requests;
+package services.requests;
 
-import chess.services.UserService;
+import services.UserService;
 
 /**
  * Request object for the {@link UserService#register(RegisterRequest)} method.

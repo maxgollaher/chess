@@ -1,11 +1,11 @@
-package chess.services;
+package services;
 
-import chess.dataAccess.AuthTokenDao;
-import chess.dataAccess.UserDao;
-import chess.models.AuthToken;
-import chess.models.User;
-import chess.services.requests.LoginRequest;
-import chess.services.responses.LoginResponse;
+import dataAccess.AuthTokenDao;
+import dataAccess.UserDao;
+import models.AuthToken;
+import models.User;
+import services.requests.LoginRequest;
+import services.responses.LoginResponse;
 import dataAccess.DataAccessException;
 
 /**
@@ -18,12 +18,12 @@ public class SessionService {
     /**
      * The {@link AuthTokenDao} to be used to access the {@link AuthToken} database
      */
-    private AuthTokenDao authTokenDao;
+    private AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
 
     /**
      * The {@link UserDao} to be used to access the {@link User} database
      */
-    private UserDao userDao;
+    private UserDao userDao = UserDao.getInstance();
 
     /**
      * Logs in a user based on a given {@link LoginRequest}
@@ -35,8 +35,13 @@ public class SessionService {
      *                             username/password is incorrect
      */
     public LoginResponse login(LoginRequest request) throws DataAccessException {
-        // TODO implement here
-        return null;
+        var foundUser = userDao.find(request.getUsername());
+        if (foundUser == null || !foundUser.getPassword().equals(request.getPassword())) {
+            throw new DataAccessException("Username or password is incorrect");
+        }
+        var authToken = new AuthToken(request.getUsername());
+        authTokenDao.insert(authToken);
+        return new LoginResponse(authToken.getUsername(), authToken.getAuthToken());
     }
 
     /**
@@ -46,7 +51,7 @@ public class SessionService {
      * @throws DataAccessException if there is an error accessing the database
      *                             or if the token is invalid
      */
-    public void logout(AuthToken authToken) throws DataAccessException {
-        // TODO implement here
+    public void logout(String authToken) throws DataAccessException {
+        authTokenDao.delete(authToken);
     }
 }

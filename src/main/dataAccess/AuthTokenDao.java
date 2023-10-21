@@ -1,11 +1,9 @@
-package chess.dataAccess;
+package dataAccess;
 
-import chess.models.AuthToken;
-import dataAccess.DataAccessException;
+import models.AuthToken;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  * The AuthTokenDao class is responsible for accessing the {@link AuthToken} database.
@@ -21,10 +19,10 @@ public class AuthTokenDao {
 
     /**
      * The HashMap of authTokens in the database,
-     * The key is the username of the player, and the value is a HashSet of all active
-     * {@link AuthToken} objects associated with that username
+     * The key is the authToken string, and the value is the
+     * {@link AuthToken} object associated with that authToken string
      */
-    private HashMap<String, HashSet<AuthToken>> authTokens;
+    private HashMap<String, AuthToken> authTokens;
 
     /**
      * Private constructor for the {@link AuthTokenDao} class
@@ -55,28 +53,31 @@ public class AuthTokenDao {
      *                             or if there is another error
      */
     public void insert(AuthToken authToken) throws DataAccessException {
-        // TODO: implement
+        authTokens.put(authToken.getAuthToken(), authToken);
     }
 
     /**
      * Deletes an authToken from the database
      *
-     * @param authToken the {@link AuthToken} to be deleted
+     * @param token the string value of the {@link AuthToken} to be deleted
      * @throws DataAccessException if there is no authToken associated with the same username in the database,
      *                             or if there is another error
      */
-    public void delete(AuthToken authToken) throws DataAccessException {
-        // TODO: implement
+    public void delete(String token) throws DataAccessException {
+        if (!authTokens.containsKey(token)) {
+            throw new DataAccessException("Invalid token");
+        }
+        authTokens.remove(token);
     }
 
     /**
      * Finds an authToken in the database
      *
-     * @param token the token of the authToken to be found
+     * @param token the token string of the authToken to be found
      * @return the {@link AuthToken} associated with the correct username or null if it doesn't exist
      * @throws DataAccessException if there is an error accessing the database
      */
-    public AuthToken find(AuthToken token) throws DataAccessException {
+    public AuthToken find(String token) throws DataAccessException {
         //TODO: implement
         return null;
     }
@@ -98,7 +99,7 @@ public class AuthTokenDao {
      * @throws DataAccessException if there is an error accessing the database
      */
     public void clear() throws DataAccessException {
-        // TODO: implement
+        authTokens.clear();
     }
 
 

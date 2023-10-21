@@ -1,7 +1,7 @@
-package chess.services.requests;
+package services.requests;
 
-import chess.models.AuthToken;
-import chess.services.GameService;
+import models.AuthToken;
+import services.GameService;
 
 
 /**

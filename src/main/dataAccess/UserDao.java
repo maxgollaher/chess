@@ -1,7 +1,6 @@
-package chess.dataAccess;
+package dataAccess;
 
-import chess.models.User;
-import dataAccess.DataAccessException;
+import models.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +53,10 @@ public class UserDao {
      *                             or if there is another error
      */
     public void insert(User user) throws DataAccessException {
-        // TODO: implement
+        if (users.containsKey(user.getUsername())) {
+            throw new DataAccessException("already taken");
+        }
+        users.put(user.getUsername(), user);
     }
 
 
@@ -67,7 +69,10 @@ public class UserDao {
      *                             or if there is another error
      */
     public void update(String username, User user) throws DataAccessException {
-        // TODO: implement
+        if (!users.containsKey(username)) {
+            throw new DataAccessException("User not found");
+        }
+        users.put(username, user);
     }
 
     /**
@@ -78,7 +83,10 @@ public class UserDao {
      *                             or if there is another error
      */
     public void delete(String username) throws DataAccessException {
-        // TODO: implement
+        if (!users.containsKey(username)) {
+            throw new DataAccessException("User not found");
+        }
+        users.remove(username);
     }
 
     /**
@@ -89,8 +97,7 @@ public class UserDao {
      * @throws DataAccessException if there is an error accessing the database.
      */
     public User find(String username) throws DataAccessException {
-        // TODO: implement
-        return null;
+        return users.get(username);
     }
 
     /**
@@ -110,7 +117,7 @@ public class UserDao {
      * @throws DataAccessException if there is an error accessing the database.
      */
     public void clear() throws DataAccessException {
-        // TODO: implement
+        users.clear();
     }
 
 }

@@ -1,7 +1,6 @@
-package chess.dataAccess;
+package dataAccess;
 
-import chess.models.Game;
-import dataAccess.DataAccessException;
+import models.Game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -119,7 +118,7 @@ public class GameDao {
      * @throws DataAccessException if there is an error accessing the database
      */
     public void clear() throws DataAccessException {
-        // TODO: implement
+        games.clear();
     }
 
 

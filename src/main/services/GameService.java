@@ -1,12 +1,12 @@
-package chess.services;
+package services;
 
-import chess.dataAccess.AuthTokenDao;
-import chess.dataAccess.GameDao;
-import chess.models.AuthToken;
-import chess.services.requests.CreateGameRequest;
-import chess.services.requests.JoinGameRequest;
-import chess.services.responses.CreateGameResponse;
-import chess.services.responses.ListGamesResponse;
+import dataAccess.AuthTokenDao;
+import dataAccess.GameDao;
+import models.AuthToken;
+import services.requests.CreateGameRequest;
+import services.requests.JoinGameRequest;
+import services.responses.CreateGameResponse;
+import services.responses.ListGamesResponse;
 import dataAccess.DataAccessException;
 
 /**

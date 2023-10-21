@@ -1,7 +1,7 @@
-package chess.services.responses;
+package services.responses;
 
-import chess.services.GameService;
-import chess.services.requests.CreateGameRequest;
+import services.GameService;
+import services.requests.CreateGameRequest;
 
 /**
  * Response object for the {@link GameService#createGame(CreateGameRequest)} method.

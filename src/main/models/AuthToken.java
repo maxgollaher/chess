@@ -1,11 +1,17 @@
-package chess.models;
+package models;
 
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Objects;
 
 /**
  * Represents an authentication token. Contains the token itself and the username of the user it belongs to.
  */
 public class AuthToken {
+
+    private static final SecureRandom secureRandom = new SecureRandom();
+    private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
+
 
     /**
      * The authentication token.
@@ -26,12 +32,17 @@ public class AuthToken {
     /**
      * Creates a new AuthToken object.
      *
-     * @param authToken the authentication token.
      * @param username  the username of the user that the token belongs to.
      */
-    public AuthToken(String authToken, String username) {
-        this.authToken = authToken;
+    public AuthToken(String username) {
+        this.authToken = generateNewToken();
         this.username = username;
+    }
+
+    public static String generateNewToken() {
+        byte[] randomBytes = new byte[24];
+        secureRandom.nextBytes(randomBytes);
+        return base64Encoder.encodeToString(randomBytes);
     }
 
     public String getAuthToken() {

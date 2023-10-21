@@ -1,11 +1,11 @@
-package chess.services;
+package services;
 
-import chess.dataAccess.AuthTokenDao;
-import chess.dataAccess.GameDao;
-import chess.dataAccess.UserDao;
-import chess.models.AuthToken;
-import chess.models.Game;
-import chess.models.User;
+import dataAccess.AuthTokenDao;
+import dataAccess.GameDao;
+import dataAccess.UserDao;
+import models.AuthToken;
+import models.Game;
+import models.User;
 import dataAccess.DataAccessException;
 
 /**
@@ -18,17 +18,17 @@ public class AdminService {
     /**
      * The {@link AuthTokenDao} to be used to access the {@link AuthToken} database
      */
-    private AuthTokenDao authTokenDao;
+    private final AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
 
     /**
      * The {@link GameDao} to be used to access the {@link Game} database
      */
-    private GameDao gameDao;
+    private final GameDao gameDao = GameDao.getInstance();
 
     /**
      * The {@link UserDao} to be used to access the {@link User} database
      */
-    private UserDao userDao;
+    private final UserDao userDao = UserDao.getInstance();
 
     /**
      * Clears all data from the database. This is used for testing purposes, and no
@@ -37,6 +37,8 @@ public class AdminService {
      * @throws DataAccessException if there is an error accessing the database
      */
     public void clearDatabase() throws DataAccessException {
-        // TODO implement here
+        authTokenDao.clear();
+        gameDao.clear();
+        userDao.clear();
     }
 }

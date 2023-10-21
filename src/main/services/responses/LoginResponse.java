@@ -1,8 +1,8 @@
-package chess.services.responses;
+package services.responses;
 
-import chess.models.AuthToken;
-import chess.services.SessionService;
-import chess.services.requests.LoginRequest;
+import models.AuthToken;
+import services.SessionService;
+import services.requests.LoginRequest;
 
 /**
  * Response object for the {@link SessionService#login(LoginRequest)} method.
@@ -17,7 +17,7 @@ public class LoginResponse {
     /**
      * The {@link AuthToken} of the user that logged in.
      */
-    private AuthToken authToken;
+    private String authToken;
 
     /**
      * Creates a new LoginResponse object.
@@ -25,7 +25,7 @@ public class LoginResponse {
      * @param username  the username of the user that logged in.
      * @param authToken the {@link AuthToken} of the user that logged in.
      */
-    public LoginResponse(String username, AuthToken authToken) {
+    public LoginResponse(String username, String authToken) {
         this.username = username;
         this.authToken = authToken;
     }
@@ -38,11 +38,11 @@ public class LoginResponse {
         this.username = username;
     }
 
-    public AuthToken getAuthToken() {
+    public String getAuthToken() {
         return authToken;
     }
 
-    public void setAuthToken(AuthToken authToken) {
+    public void setAuthToken(String authToken) {
         this.authToken = authToken;
     }
 

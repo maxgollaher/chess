@@ -1,11 +1,11 @@
-package chess.services;
+package services;
 
-import chess.dataAccess.AuthTokenDao;
-import chess.dataAccess.UserDao;
-import chess.models.AuthToken;
-import chess.models.User;
-import chess.services.requests.RegisterRequest;
-import chess.services.responses.LoginResponse;
+import dataAccess.AuthTokenDao;
+import dataAccess.UserDao;
+import models.AuthToken;
+import models.User;
+import services.requests.RegisterRequest;
+import services.responses.LoginResponse;
 import dataAccess.DataAccessException;
 
 /**
@@ -17,12 +17,12 @@ public class UserService {
     /**
      * The {@link UserDao} to be used to access the {@link User} database
      */
-    private UserDao userDao;
+    private final UserDao userDao = UserDao.getInstance();
 
     /**
      * The {@link AuthTokenDao} to be used to access the {@link AuthToken} database
      */
-    private AuthTokenDao authTokenDao;
+    private final AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
 
     /**
      * Registers a new user based on a given RegisterRequest
@@ -34,7 +34,10 @@ public class UserService {
      *                             username/email is already taken.
      */
     public LoginResponse register(RegisterRequest request) throws DataAccessException {
-        // TODO implement here
-        return null;
+        var user = new User(request.getUsername(), request.getPassword(), request.getEmail());
+        userDao.insert(user);
+        var authToken = new AuthToken(user.getUsername());
+        authTokenDao.insert(authToken);
+        return new LoginResponse(authToken.getUsername(), authToken.getAuthToken());
     }
 }

@@ -1,4 +1,4 @@
-package chess.handlers;
+package handlers;
 
 public class GameHandler {
 

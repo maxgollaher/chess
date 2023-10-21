@@ -1,6 +1,6 @@
-package chess.services.requests;
+package services.requests;
 
-import chess.services.SessionService;
+import services.SessionService;
 
 /**
  * Request object for the {@link SessionService#login(LoginRequest)} method.
