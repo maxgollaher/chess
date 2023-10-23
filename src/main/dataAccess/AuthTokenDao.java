@@ -64,9 +64,6 @@ public class AuthTokenDao {
      *                             or if there is another error
      */
     public void delete(String token) throws DataAccessException {
-        if (!authTokens.containsKey(token)) {
-            throw new DataAccessException("Invalid token");
-        }
         authTokens.remove(token);
     }
 
@@ -78,8 +75,7 @@ public class AuthTokenDao {
      * @throws DataAccessException if there is an error accessing the database
      */
     public AuthToken find(String token) throws DataAccessException {
-        //TODO: implement
-        return null;
+        return authTokens.get(token);
     }
 
     /**

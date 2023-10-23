@@ -52,7 +52,10 @@ public class GameDao {
      * @throws DataAccessException if there is already a game with the same id in the database
      */
     public void insert(Game game) throws DataAccessException {
-        // TODO: implement
+        if (games.containsKey(game.getGameID())) {
+            throw new DataAccessException("game already exists");
+        }
+        games.put(game.getGameID(), game);
     }
 
     /**

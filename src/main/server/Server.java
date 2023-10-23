@@ -138,10 +138,13 @@ public class Server {
      * @param response the response object.
      * @return the response body.
      */
-    private Object createGame(Request request, Response response) {
+    private Object createGame(Request request, Response response) throws DataAccessException {
+        var headerObj = getHeader(request);
         var bodyObj = getBody(request, Map.class);
         response.type("application/json");
-        return new Gson().toJson(bodyObj);
+        sessionHandler.authorizeUser(headerObj, response);
+        gameHandler.createGame(bodyObj, response);
+        return response.body();
     }
 
     /**
@@ -167,6 +170,7 @@ public class Server {
     private Object logout(Request request, Response response) throws DataAccessException {
         var headerObj = getHeader(request);
         response.type("application/json");
+        sessionHandler.authorizeUser(headerObj, response);
         sessionHandler.logout(headerObj, response);
         return response.body();
     }
@@ -182,6 +186,8 @@ public class Server {
      */
     private Object login(Request request, Response response) throws DataAccessException {
         var bodyObj = getBody(request, Map.class);
+        // get the class of body object and print it out
+        System.out.println(bodyObj.getClass());
         response.type("application/json");
         sessionHandler.login(bodyObj, response);
         return response.body();

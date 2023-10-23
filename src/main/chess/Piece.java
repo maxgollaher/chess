@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-
 
 enum Direction {
     UP, DOWN, LEFT, RIGHT, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT, K_UP_LEFT, K_UP_RIGHT, K_DOWN_LEFT, K_DOWN_RIGHT, K_LEFT_UP, K_LEFT_DOWN, K_RIGHT_UP, K_RIGHT_DOWN;
@@ -33,10 +31,10 @@ enum Direction {
 
 public class Piece implements ChessPiece {
 
-    private static final AtomicInteger counter = new AtomicInteger(0);
+    private static int counter = 1;
     private final ChessGame.TeamColor teamColor;
     private final PieceType pieceType;
-    private final int id = counter.getAndIncrement();
+    private final int id = counter++;
 
     public Piece(ChessGame.TeamColor teamColor, PieceType pieceType) {
         this.teamColor = teamColor;

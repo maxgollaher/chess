@@ -3,6 +3,7 @@ package models;
 import chess.ChessGame;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents a game. Contains the gameID, the usernames of the players, the name of the game, and the game itself.
@@ -37,9 +38,25 @@ public class Game {
     private ChessGame game;
 
     /**
+     * The static counter for the gameID.
+     */
+    private static int counter = 1;
+
+
+    /**
      * Blank constructor for Game, used to create null Game objects if needed.
      */
     public Game() {
+    }
+
+    /**
+     * Creates a new Game object.
+     *
+     * @param gameName the name of the game.
+     */
+    public Game(String gameName) {
+        this.gameName = gameName;
+        this.gameID = counter++; // increment the counter and assign the value to gameID
     }
 
     /**

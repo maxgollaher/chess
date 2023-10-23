@@ -11,7 +11,7 @@ public class CreateGameResponse {
     /**
      * The id of the game that was created.
      */
-    private int gameId;
+    private int gameID;
 
     /**
      * Creates a new CreateGameResponse object.
@@ -19,14 +19,14 @@ public class CreateGameResponse {
      * @param gameId the id of the game that was created.
      */
     public CreateGameResponse(int gameId) {
-        this.gameId = gameId;
+        this.gameID = gameId;
     }
 
     public int getGameId() {
-        return gameId;
+        return gameID;
     }
 
     public void setGameId(int gameId) {
-        this.gameId = gameId;
+        this.gameID = gameId;
     }
 }

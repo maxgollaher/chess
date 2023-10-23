@@ -3,6 +3,7 @@ package services;
 import dataAccess.AuthTokenDao;
 import dataAccess.GameDao;
 import models.AuthToken;
+import models.Game;
 import services.requests.CreateGameRequest;
 import services.requests.JoinGameRequest;
 import services.responses.CreateGameResponse;
@@ -18,12 +19,12 @@ public class GameService {
     /**
      * The {@link GameDao} to be used to access the game database
      */
-    private GameDao gameDao;
+    private final GameDao gameDao = GameDao.getInstance();
 
     /**
      * The {@link AuthTokenDao} to be used to access the {@link AuthToken} database
      */
-    private AuthTokenDao authTokenDao;
+    private final AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
 
 
     /**
@@ -47,8 +48,9 @@ public class GameService {
      * @throws DataAccessException if there is an error accessing the database or the user lacks authorization.
      */
     public CreateGameResponse createGame(CreateGameRequest request) throws DataAccessException {
-        // TODO implement here
-        return null;
+        var game = new Game(request.getGameName());
+        gameDao.insert(game);
+        return new CreateGameResponse(game.getGameID());
     }
 
     /**

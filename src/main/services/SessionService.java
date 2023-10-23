@@ -54,4 +54,15 @@ public class SessionService {
     public void logout(String authToken) throws DataAccessException {
         authTokenDao.delete(authToken);
     }
+
+    /**
+     * Authorizes a user based on a given token
+     * @param authToken
+     * @throws DataAccessException
+     */
+    public void authorizeUser(String authToken) throws DataAccessException {
+        if (authTokenDao.find(authToken) == null) {
+            throw new DataAccessException("unauthorized");
+        }
+    }
 }

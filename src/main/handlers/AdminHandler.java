@@ -1,10 +1,8 @@
 package handlers;
 
-import com.google.gson.JsonObject;
 import dataAccess.DataAccessException;
 import services.AdminService;
 
-import java.net.http.HttpResponse;
 
 public class AdminHandler {
 
