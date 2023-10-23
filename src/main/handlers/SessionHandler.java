@@ -15,7 +15,7 @@ public class SessionHandler {
 
     private static final SessionService sessionService = new SessionService();
 
-    public void login(Map bodyObj, Response response) throws DataAccessException {
+    public void login(Map<String, Object> bodyObj, Response response) throws DataAccessException {
         LoginRequest loginRequest = new Gson().fromJson(bodyObj.toString(), LoginRequest.class);
         try {
             LoginResponse loginResponse = sessionService.login(loginRequest);
@@ -32,23 +32,22 @@ public class SessionHandler {
      *
      * @param authToken the auth token of the user.
      * @param response the response object.
-     * @return the response body.
      * @throws DataAccessException if there is an error accessing the database.
      */
     public void logout(String authToken, Response response) throws DataAccessException {
             sessionService.logout(authToken);
-            response.body(new JsonObject().toString());
+            response.body(new Gson().toJson(new JsonObject()));
     }
 
     /**
      * Authorizes the user based on an AuthToken. If the user is not authorized, the response status is set to 401.
-     * @param headerObj
-     * @param response
-     * @throws DataAccessException
+     * @param authToken the auth token of the user.
+     * @param response the response object.
+     * @throws DataAccessException if the user is not authorized.
      */
-    public void authorizeUser(String headerObj, Response response) throws DataAccessException {
+    public void authorizeUser(String authToken, Response response) throws DataAccessException {
         try {
-            sessionService.authorizeUser(headerObj);
+            sessionService.authorizeUser(authToken);
         } catch (DataAccessException e) {
             response.status(401);
             throw e;

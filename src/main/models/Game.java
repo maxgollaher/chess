@@ -1,9 +1,7 @@
 package models;
 
 import chess.ChessGame;
-
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents a game. Contains the gameID, the usernames of the players, the name of the game, and the game itself.
@@ -56,7 +54,8 @@ public class Game {
      */
     public Game(String gameName) {
         this.gameName = gameName;
-        this.gameID = counter++; // increment the counter and assign the value to gameID
+        this.gameID = counter++;
+        this.game = new chess.Game();
     }
 
     /**
@@ -133,11 +132,11 @@ public class Game {
     @Override
     public String toString() {
         return "Game{" +
-                "gameID=" + gameID +
-                ", whiteUsername='" + whiteUsername + '\'' +
-                ", blackUsername='" + blackUsername + '\'' +
-                ", gameName='" + gameName + '\'' +
-                ", game=" + game +
+                "gameID: " + gameID +
+                ", whiteUsername: '" + whiteUsername + '\'' +
+                ", blackUsername: '" + blackUsername + '\'' +
+                ", gameName: '" + gameName + '\'' +
+                ", game: " + game +
                 '}';
     }
 }

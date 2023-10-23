@@ -1,5 +1,6 @@
 package dataAccess;
 
+import chess.ChessGame;
 import models.Game;
 
 import java.util.ArrayList;
@@ -74,11 +75,34 @@ public class GameDao {
      *
      * @param username the username of the player claiming the spot,
      *                 they will be inserted in either the white or black player spot.
-     * @param game     the {@link Game} to claim the spot in
+     * @param gameID     the gameID to claim the spot in
      * @throws DataAccessException if both spots are already taken
      */
-    public void claimSpot(String username, Game game) throws DataAccessException {
-        // TODO: implement
+    public void claimSpot(String username, ChessGame.TeamColor playerColor, int gameID) throws DataAccessException {
+        var game = games.get(gameID);
+
+        // check if the user only wants to spectate
+        if (playerColor == null) {
+            return;
+        }
+
+        // check if the spot is taken, if it is, throw an exception
+        switch (playerColor) {
+            case WHITE:
+                if (game.getWhiteUsername() == null) {
+                    game.setWhiteUsername(username);
+                } else {
+                    throw new DataAccessException("already taken");
+                }
+                break;
+            case BLACK:
+                if (game.getBlackUsername() == null) {
+                    game.setBlackUsername(username);
+                } else {
+                    throw new DataAccessException("already taken");
+                }
+                break;
+        }
     }
 
     /**
@@ -94,13 +118,12 @@ public class GameDao {
     /**
      * Finds a game in the database
      *
-     * @param gameId the id of the game to be found
+     * @param gameID the id of the game to be found
      * @return the {@link Game} with the given id or null if it does not exist
      * @throws DataAccessException if there is an error accessing the database
      */
-    public Game find(int gameId) throws DataAccessException {
-        // TODO: implement
-        return null;
+    public Game find(int gameID) throws DataAccessException {
+        return games.get(gameID);
     }
 
     /**
@@ -111,8 +134,7 @@ public class GameDao {
      * @throws DataAccessException if there is an error accessing the database
      */
     public ArrayList<Game> findAll() throws DataAccessException {
-        // TODO: implement
-        return null;
+        return new ArrayList<>(games.values());
     }
 
     /**

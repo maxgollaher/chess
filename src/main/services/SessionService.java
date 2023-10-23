@@ -57,8 +57,8 @@ public class SessionService {
 
     /**
      * Authorizes a user based on a given token
-     * @param authToken
-     * @throws DataAccessException
+     * @param authToken the authToken of the user to authorize
+     * @throws DataAccessException if the authToken doesn't exist
      */
     public void authorizeUser(String authToken) throws DataAccessException {
         if (authTokenDao.find(authToken) == null) {

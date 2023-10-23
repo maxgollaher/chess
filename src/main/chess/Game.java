@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static java.lang.Math.abs;
@@ -353,5 +354,18 @@ public class Game implements ChessGame {
         this.board = board;
         hasMoved = new HashSet<>(); // reset hasMoved for testing purposes
         isEnPassant = null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Game game = (Game) o;
+        return teamTurn == game.teamTurn && Objects.equals(board, game.board) && Objects.equals(isEnPassant, game.isEnPassant) && Objects.equals(hasMoved, game.hasMoved);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(teamTurn, board, isEnPassant, hasMoved);
     }
 }

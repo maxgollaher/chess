@@ -1,6 +1,6 @@
 package services.requests;
 
-import models.AuthToken;
+import chess.ChessGame;
 import services.GameService;
 
 
@@ -9,55 +9,50 @@ import services.GameService;
  */
 public class JoinGameRequest {
 
-    /**
-     * The {@link AuthToken} of the user that is joining the game.
-     */
-    private AuthToken authToken;
+    private String authToken;
 
     /**
      * The color of the player that is joining the game. Either "white" or "black".
      */
-    private String playerColor;
+    private ChessGame.TeamColor playerColor;
 
     /**
      * The id of the game that the player is joining.
      */
-    private String gameId;
+    private int gameID;
 
     /**
      * Creates a new JoinGameRequest object.
      *
-     * @param authToken   the {@link AuthToken} of the user that is joining the game.
      * @param playerColor the color of the player that is joining the game. Either "white" or "black".
      * @param gameId      the id of the game that the player is joining.
      */
-    public JoinGameRequest(AuthToken authToken, String playerColor, String gameId) {
-        this.authToken = authToken;
+    public JoinGameRequest(ChessGame.TeamColor playerColor, int gameId) {
         this.playerColor = playerColor;
-        this.gameId = gameId;
+        this.gameID = gameId;
     }
 
-    public String getPlayerColor() {
+    public ChessGame.TeamColor getPlayerColor() {
         return playerColor;
     }
 
-    public void setPlayerColor(String playerColor) {
+    public void setPlayerColor(ChessGame.TeamColor playerColor) {
         this.playerColor = playerColor;
     }
 
-    public String getGameId() {
-        return gameId;
+    public int getGameID() {
+        return gameID;
     }
 
-    public void setGameId(String gameId) {
-        this.gameId = gameId;
+    public void setGameID(int gameID) {
+        this.gameID = gameID;
     }
 
-    public AuthToken getAuthToken() {
+    public String getAuthToken() {
         return authToken;
     }
 
-    public void setAuthToken(AuthToken authToken) {
+    public void setAuthToken(String authToken) {
         this.authToken = authToken;
     }
 }

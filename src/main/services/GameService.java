@@ -1,6 +1,7 @@
 package services;
 
 import dataAccess.AuthTokenDao;
+import dataAccess.DataAccessException;
 import dataAccess.GameDao;
 import models.AuthToken;
 import models.Game;
@@ -8,7 +9,8 @@ import services.requests.CreateGameRequest;
 import services.requests.JoinGameRequest;
 import services.responses.CreateGameResponse;
 import services.responses.ListGamesResponse;
-import dataAccess.DataAccessException;
+
+import java.util.ArrayList;
 
 /**
  * The Game Service class handles all requests to the /game endpoint of the API.
@@ -36,7 +38,12 @@ public class GameService {
      *                             position is already taken.
      */
     public void joinGame(JoinGameRequest request) throws DataAccessException {
-        // TODO implement here
+        var game = gameDao.find(request.getGameID());
+        if (game == null) {
+            throw new DataAccessException("game not found");
+        }
+        var username = authTokenDao.find(request.getAuthToken()).getUsername(); // the user has already been authorized, so this will always work
+        gameDao.claimSpot(username, request.getPlayerColor(), request.getGameID());
     }
 
     /**
@@ -56,14 +63,12 @@ public class GameService {
     /**
      * Lists all games that are currently in progress.
      *
-     * @param authToken the {@link AuthToken} of the user that is listing the games.
      * @return a {@link ListGamesResponse} containing a list of all games that are currently in progress.
      * @throws DataAccessException if there is an error accessing the database or the user lacks authorization.
      */
-
-    public ListGamesResponse listGames(AuthToken authToken) throws DataAccessException {
-        // TODO implement here
-        return null;
+    public ListGamesResponse listGames() throws DataAccessException {
+        ArrayList<Game> gameList = new ArrayList<>(gameDao.findAll());
+        return new ListGamesResponse(gameList);
     }
 
 }

@@ -107,87 +107,85 @@ public class Server {
     /**
      * Clears the database.
      *
-     * @param request the request object.
-     * @param response the response object.
      * @return the response body.
      * @throws DataAccessException if there is an error accessing the database.
      */
     private Object clear(Request request, Response response) throws DataAccessException {
-        adminHandler.clearDatabase();
-        response.type("application/json");
-        return new Gson().toJson(Map.of("message", "Clear succeeded"));
+        adminHandler.clearDatabase(response);
+        return response.body();
     }
 
     /**
-     * Joins a game.
+     * Joins a game after the user is authorized.
      *
      * @param request the request object.
      * @param response the response object.
      * @return the response body.
      */
-    private Object joinGame(Request request, Response response) {
-        var bodyObj = getBody(request, Map.class);
+    private Object joinGame(Request request, Response response) throws DataAccessException {
+        var authToken = getHeader(request);
+        var bodyObj = getBody(request);
         response.type("application/json");
-        return new Gson().toJson(bodyObj);
+        sessionHandler.authorizeUser(authToken, response);
+        gameHandler.joinGame(bodyObj, authToken, response); // pass authToken in to later get the username
+        return response.body();
     }
 
     /**
-     * Creates a game.
+     * Creates a game after the user is authorized.
      *
      * @param request the request object.
      * @param response the response object.
      * @return the response body.
      */
     private Object createGame(Request request, Response response) throws DataAccessException {
-        var headerObj = getHeader(request);
-        var bodyObj = getBody(request, Map.class);
+        var authToken = getHeader(request);
+        var bodyObj = getBody(request);
         response.type("application/json");
-        sessionHandler.authorizeUser(headerObj, response);
+        sessionHandler.authorizeUser(authToken, response);
         gameHandler.createGame(bodyObj, response);
         return response.body();
     }
 
     /**
-     * Lists all games.
+     * Lists all games after the user is authorized.
      *
      * @param request the request object.
      * @param response the response object.
      * @return the response body.
      */
-    private Object listGames(Request request, Response response) {
-        var bodyObj = getBody(request, Map.class);
+    private Object listGames(Request request, Response response) throws DataAccessException {
+        var authToken = getHeader(request);
         response.type("application/json");
-        return new Gson().toJson(bodyObj);
+        sessionHandler.authorizeUser(authToken, response);
+        gameHandler.listGames(response);
+        return response.body();
     }
 
     /**
-     * Logs out.
+     * Logs out after the user is authorized.
      *
      * @param request the request object.
      * @param response the response object.
      * @return the response body.
      */
     private Object logout(Request request, Response response) throws DataAccessException {
-        var headerObj = getHeader(request);
+        var authToken = getHeader(request);
         response.type("application/json");
-        sessionHandler.authorizeUser(headerObj, response);
-        sessionHandler.logout(headerObj, response);
+        sessionHandler.authorizeUser(authToken, response);
+        sessionHandler.logout(authToken, response);
         return response.body();
     }
-
-
 
     /**
      * Logs in.
      *
      * @param request the request object.
      * @param response the response object.
-     * @return the response body.
+     * @return the response body containing the auth token if the login was successful.
      */
     private Object login(Request request, Response response) throws DataAccessException {
-        var bodyObj = getBody(request, Map.class);
-        // get the class of body object and print it out
-        System.out.println(bodyObj.getClass());
+        var bodyObj = getBody(request);
         response.type("application/json");
         sessionHandler.login(bodyObj, response);
         return response.body();
@@ -201,7 +199,7 @@ public class Server {
      * @return the response body of the register request.
      */
     private Object register(Request request, Response response) throws DataAccessException {
-        var bodyObj = getBody(request, Map.class);
+        var bodyObj = getBody(request);
         response.type("application/json");
         userHandler.register(bodyObj, response);
         return response.body();
@@ -211,18 +209,23 @@ public class Server {
      * Gets the body of the request.
      *
      * @param request the request object.
-     * @param clazz the class of the body.
-     * @param <T> the type of the body.
      * @return the body of the request.
      */
-    private static <T> T getBody(Request request, Class<T> clazz) {
-        var body = new Gson().fromJson(request.body(), clazz);
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> getBody(Request request) {
+        var body = new Gson().fromJson(request.body(), Map.class);
         if (body == null) {
             throw new RuntimeException("missing required body");
         }
         return body;
     }
 
+    /**
+     * Gets the header of the request.
+     *
+     * @param request the request object.
+     * @return the header of the request.
+     */
     private static String getHeader(Request request) {
         var header = request.headers("authorization");
         if (header == null) {

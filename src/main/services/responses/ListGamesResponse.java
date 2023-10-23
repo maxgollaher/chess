@@ -7,7 +7,7 @@ import services.GameService;
 import java.util.ArrayList;
 
 /**
- * Response object for the {@link GameService#listGames(AuthToken)} method.
+ * Response object for the {@link GameService#listGames()} method.
  */
 public class ListGamesResponse {
 
