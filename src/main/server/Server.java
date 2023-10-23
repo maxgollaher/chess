@@ -114,7 +114,8 @@ public class Server {
      */
     private Object clear(Request request, Response response) throws DataAccessException {
         adminHandler.clearDatabase();
-        return new Gson().toJson(null);
+        response.type("application/json");
+        return new Gson().toJson(Map.of("message", "Clear succeeded"));
     }
 
     /**
@@ -126,6 +127,7 @@ public class Server {
      */
     private Object joinGame(Request request, Response response) {
         var bodyObj = getBody(request, Map.class);
+        response.type("application/json");
         return new Gson().toJson(bodyObj);
     }
 
@@ -138,6 +140,7 @@ public class Server {
      */
     private Object createGame(Request request, Response response) {
         var bodyObj = getBody(request, Map.class);
+        response.type("application/json");
         return new Gson().toJson(bodyObj);
     }
 
@@ -150,7 +153,7 @@ public class Server {
      */
     private Object listGames(Request request, Response response) {
         var bodyObj = getBody(request, Map.class);
-
+        response.type("application/json");
         return new Gson().toJson(bodyObj);
     }
 
@@ -163,6 +166,7 @@ public class Server {
      */
     private Object logout(Request request, Response response) throws DataAccessException {
         var headerObj = getHeader(request);
+        response.type("application/json");
         sessionHandler.logout(headerObj, response);
         return response.body();
     }
@@ -178,6 +182,7 @@ public class Server {
      */
     private Object login(Request request, Response response) throws DataAccessException {
         var bodyObj = getBody(request, Map.class);
+        response.type("application/json");
         sessionHandler.login(bodyObj, response);
         return response.body();
     }
@@ -191,6 +196,7 @@ public class Server {
      */
     private Object register(Request request, Response response) throws DataAccessException {
         var bodyObj = getBody(request, Map.class);
+        response.type("application/json");
         userHandler.register(bodyObj, response);
         return response.body();
     }
