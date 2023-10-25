@@ -5,54 +5,12 @@ import services.GameService;
 
 
 /**
- * Request object for the {@link GameService#joinGame(JoinGameRequest)} method.
+ * Immutable request object for the {@link GameService#joinGame(JoinGameRequest)} method.
+ *
+ * @param playerColor The {@link ChessGame.TeamColor} of the player that is joining the game. Can be left empty to
+ *                    allow for watching the game.
+ * @param gameID      The id of the game that the player is joining.
+ * @param authToken   The auth token of the player joining the game.
  */
-public class JoinGameRequest {
-
-    private String authToken;
-
-    /**
-     * The color of the player that is joining the game. Either "white" or "black".
-     */
-    private ChessGame.TeamColor playerColor;
-
-    /**
-     * The id of the game that the player is joining.
-     */
-    private int gameID;
-
-    /**
-     * Creates a new JoinGameRequest object.
-     *
-     * @param playerColor the color of the player that is joining the game. Either "white" or "black".
-     * @param gameId      the id of the game that the player is joining.
-     */
-    public JoinGameRequest(ChessGame.TeamColor playerColor, int gameId) {
-        this.playerColor = playerColor;
-        this.gameID = gameId;
-    }
-
-    public ChessGame.TeamColor getPlayerColor() {
-        return playerColor;
-    }
-
-    public void setPlayerColor(ChessGame.TeamColor playerColor) {
-        this.playerColor = playerColor;
-    }
-
-    public int getGameID() {
-        return gameID;
-    }
-
-    public void setGameID(int gameID) {
-        this.gameID = gameID;
-    }
-
-    public String getAuthToken() {
-        return authToken;
-    }
-
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
-    }
+public record JoinGameRequest(ChessGame.TeamColor playerColor, int gameID, String authToken) {
 }

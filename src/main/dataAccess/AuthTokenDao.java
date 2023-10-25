@@ -22,7 +22,7 @@ public class AuthTokenDao {
      * The key is the authToken string, and the value is the
      * {@link AuthToken} object associated with that authToken string
      */
-    private HashMap<String, AuthToken> authTokens;
+    private final HashMap<String, AuthToken> authTokens;
 
     /**
      * Private constructor for the {@link AuthTokenDao} class
@@ -85,8 +85,7 @@ public class AuthTokenDao {
      * @throws DataAccessException if there is an error accessing the database
      */
     public ArrayList<AuthToken> findAll() throws DataAccessException {
-        // TODO: implement
-        return null;
+        return new ArrayList<>(authTokens.values());
     }
 
     /**

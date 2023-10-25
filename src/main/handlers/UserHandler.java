@@ -9,13 +9,24 @@ import spark.Response;
 
 import java.util.Map;
 
+/**
+ * Handler for the /user endpoint
+ */
 public class UserHandler {
 
     private static final UserService userService = new UserService();
 
-    public void register(Map bodyObj, Response response) throws DataAccessException {
+    /**
+     * Registers a new user based on a given RegisterRequest
+     *
+     * @param bodyObj  the body of the request, containing the username, password, and email
+     * @param response the spark response object to be modified with the data from the LoginResponse
+     * @throws DataAccessException when the request is invalid/missing data, and when the Service throws an exception
+     *                             if the username/password is already taken
+     */
+    public void register(Map<String, Object> bodyObj, Response response) throws DataAccessException {
         RegisterRequest registerRequest = new Gson().fromJson(bodyObj.toString(), RegisterRequest.class);
-        if (registerRequest.getUsername() == null || registerRequest.getPassword() == null || registerRequest.getEmail() == null) {
+        if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
             response.status(400);
             throw new DataAccessException("bad request");
         }

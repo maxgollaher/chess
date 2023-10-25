@@ -23,12 +23,6 @@ public class User {
     private String email;
 
     /**
-     * Blank constructor for User, used to create null User objects if needed.
-     */
-    public User() {
-    }
-
-    /**
      * Creates a new User object.
      *
      * @param username the username of the user.

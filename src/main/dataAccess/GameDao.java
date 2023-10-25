@@ -22,7 +22,7 @@ public class GameDao {
      * The HashMap of games in the database
      * The key is the gameId, and the value is the {@link Game} object
      */
-    private HashMap<Integer, Game> games;
+    private final HashMap<Integer, Game> games;
 
     /**
      * Private constructor for the {@link GameDao} class
@@ -60,23 +60,12 @@ public class GameDao {
     }
 
     /**
-     * Updates a game in the database
-     *
-     * @param gameId the id of the game to be updated
-     * @param game   the updated {@link Game} to replace the existing one in the database
-     * @throws DataAccessException if there is no game with the given id in the database
-     */
-    public void update(int gameId, Game game) throws DataAccessException {
-        // TODO: implement
-    }
-
-    /**
      * Claims a spot in the game for the given player
      *
      * @param username the username of the player claiming the spot,
      *                 they will be inserted in either the white or black player spot.
-     * @param gameID     the gameID to claim the spot in
-     * @throws DataAccessException if both spots are already taken
+     * @param gameID   the gameID to claim the spot in
+     * @throws DataAccessException if both spots are already taken when the player tries to claim a spot
      */
     public void claimSpot(String username, ChessGame.TeamColor playerColor, int gameID) throws DataAccessException {
         var game = games.get(gameID);
@@ -103,16 +92,6 @@ public class GameDao {
                 }
                 break;
         }
-    }
-
-    /**
-     * Deletes a game from the database
-     *
-     * @param gameId the gameId of the {@link Game} to be deleted
-     * @throws DataAccessException if there is no game with the given id in the database
-     */
-    public void delete(int gameId) throws DataAccessException {
-        // TODO: implement
     }
 
     /**

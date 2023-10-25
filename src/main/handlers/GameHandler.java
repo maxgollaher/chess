@@ -11,6 +11,9 @@ import spark.Response;
 
 import java.util.Map;
 
+/**
+ * Handler for the /game endpoint
+ */
 public class GameHandler {
 
     private static final GameService gameService = new GameService();
@@ -22,22 +25,25 @@ public class GameHandler {
      * @param bodyObj   the body of the request, containing the player color and game id
      * @param authToken the auth token of the player, used to obtain the username of the player joining the game
      * @param response  will have an empty body
-     * @throws DataAccessException when the request is invalid/missing data
+     * @throws DataAccessException when the request is invalid/missing data, and when the Service throws an exception
+     *                             if the game is full
      */
     public void joinGame(Map<String, Object> bodyObj, String authToken, Response response) throws DataAccessException {
+        // add the auth token to the body and create a JoinGameRequest
+        bodyObj.put("authToken", authToken);
         JoinGameRequest joinGameRequest = new Gson().fromJson(new Gson().toJson(bodyObj), JoinGameRequest.class);
-        if (joinGameRequest.getGameID() == 0) {
+        if (joinGameRequest.gameID() == 0) {
             response.status(400);
             throw new DataAccessException("bad request");
         }
-        joinGameRequest.setAuthToken(authToken); // the user has already been authorized, set the auth token to allow the service to get the username
         try {
             gameService.joinGame(joinGameRequest);
         } catch (DataAccessException e) {
             response.status(403);
             throw e;
         }
-        response.body(new Gson().toJson(Map.of("message", "Success", "success", true)));
+
+        response.body(new Gson().toJson(Map.of("message", "Success")));
     }
 
     /**
@@ -49,7 +55,7 @@ public class GameHandler {
      */
     public void createGame(Map<String, Object> bodyObj, Response response) throws DataAccessException {
         CreateGameRequest createGameRequest = new Gson().fromJson(new Gson().toJson(bodyObj), CreateGameRequest.class);
-        if (createGameRequest.getGameName() == null) {
+        if (createGameRequest.gameName() == null) {
             response.status(400);
             throw new DataAccessException("bad request");
         }

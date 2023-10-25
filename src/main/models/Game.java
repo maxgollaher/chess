@@ -1,6 +1,7 @@
 package models;
 
 import chess.ChessGame;
+
 import java.util.Objects;
 
 /**
@@ -9,43 +10,31 @@ import java.util.Objects;
 public class Game {
 
     /**
+     * The static counter for the gameID.
+     */
+    private static int counter = 1;
+    /**
      * The id of the game.
      */
     private int gameID;
-
     /**
      * The username of the white player.
      */
     private String whiteUsername;
-
     /**
      * The username of the black player.
      */
     private String blackUsername;
-
     /**
      * The name of the game.
      */
     private String gameName;
-
     /**
      * The game object itself.
      *
      * @see ChessGame
      */
     private ChessGame game;
-
-    /**
-     * The static counter for the gameID.
-     */
-    private static int counter = 1;
-
-
-    /**
-     * Blank constructor for Game, used to create null Game objects if needed.
-     */
-    public Game() {
-    }
 
     /**
      * Creates a new Game object.
@@ -56,24 +45,6 @@ public class Game {
         this.gameName = gameName;
         this.gameID = counter++;
         this.game = new chess.Game();
-    }
-
-    /**
-     * Creates a new Game object.
-     *
-     * @param gameID        the id of the game.
-     * @param whiteUsername the username of the white player.
-     * @param blackUsername the username of the black player.
-     * @param gameName      the name of the game.
-     * @param game          the {@link ChessGame} object itself.
-     */
-
-    public Game(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {
-        this.gameID = gameID;
-        this.whiteUsername = whiteUsername;
-        this.blackUsername = blackUsername;
-        this.gameName = gameName;
-        this.game = game;
     }
 
     public int getGameID() {
@@ -102,10 +73,6 @@ public class Game {
 
     public String getGameName() {
         return gameName;
-    }
-
-    public void setGameName(String gameName) {
-        this.gameName = gameName;
     }
 
     public ChessGame getGame() {

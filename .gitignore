@@ -6,6 +6,9 @@
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+.idea/discord.xml
+.idea/libraries/*
+.idea/modules.xml
 
 ### Eclipse ###
 .apt_generated

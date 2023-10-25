@@ -32,13 +32,18 @@ public class AuthToken {
     /**
      * Creates a new AuthToken object.
      *
-     * @param username  the username of the user that the token belongs to.
+     * @param username the username of the user that the token belongs to.
      */
     public AuthToken(String username) {
         this.authToken = generateNewToken();
         this.username = username;
     }
 
+    /**
+     * Generates a new random authentication token.
+     *
+     * @return a new authentication token.
+     */
     public static String generateNewToken() {
         byte[] randomBytes = new byte[24];
         secureRandom.nextBytes(randomBytes);

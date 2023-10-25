@@ -1,12 +1,12 @@
 package services;
 
 import dataAccess.AuthTokenDao;
+import dataAccess.DataAccessException;
 import dataAccess.UserDao;
 import models.AuthToken;
 import models.User;
 import services.requests.LoginRequest;
 import services.responses.LoginResponse;
-import dataAccess.DataAccessException;
 
 /**
  * This class is responsible for handling all requests to the session
@@ -18,12 +18,12 @@ public class SessionService {
     /**
      * The {@link AuthTokenDao} to be used to access the {@link AuthToken} database
      */
-    private AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
+    private final AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
 
     /**
      * The {@link UserDao} to be used to access the {@link User} database
      */
-    private UserDao userDao = UserDao.getInstance();
+    private final UserDao userDao = UserDao.getInstance();
 
     /**
      * Logs in a user based on a given {@link LoginRequest}
@@ -35,11 +35,11 @@ public class SessionService {
      *                             username/password is incorrect
      */
     public LoginResponse login(LoginRequest request) throws DataAccessException {
-        var foundUser = userDao.find(request.getUsername());
-        if (foundUser == null || !foundUser.getPassword().equals(request.getPassword())) {
+        var foundUser = userDao.find(request.username());
+        if (foundUser == null || !foundUser.getPassword().equals(request.password())) {
             throw new DataAccessException("Username or password is incorrect");
         }
-        var authToken = new AuthToken(request.getUsername());
+        var authToken = new AuthToken(request.username());
         authTokenDao.insert(authToken);
         return new LoginResponse(authToken.getUsername(), authToken.getAuthToken());
     }
@@ -57,6 +57,7 @@ public class SessionService {
 
     /**
      * Authorizes a user based on a given token
+     *
      * @param authToken the authToken of the user to authorize
      * @throws DataAccessException if the authToken doesn't exist
      */

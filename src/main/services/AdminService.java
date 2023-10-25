@@ -1,12 +1,12 @@
 package services;
 
 import dataAccess.AuthTokenDao;
+import dataAccess.DataAccessException;
 import dataAccess.GameDao;
 import dataAccess.UserDao;
 import models.AuthToken;
 import models.Game;
 import models.User;
-import dataAccess.DataAccessException;
 
 /**
  * The Admin Service class handles all requests to the /db endpoint of the API.

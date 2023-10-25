@@ -1,12 +1,12 @@
 package services;
 
 import dataAccess.AuthTokenDao;
+import dataAccess.DataAccessException;
 import dataAccess.UserDao;
 import models.AuthToken;
 import models.User;
 import services.requests.RegisterRequest;
 import services.responses.LoginResponse;
-import dataAccess.DataAccessException;
 
 /**
  * Interacts with the {@link UserDao} to register new users. It handles all requests
@@ -34,7 +34,7 @@ public class UserService {
      *                             username/email is already taken.
      */
     public LoginResponse register(RegisterRequest request) throws DataAccessException {
-        var user = new User(request.getUsername(), request.getPassword(), request.getEmail());
+        var user = new User(request.username(), request.password(), request.email());
         userDao.insert(user);
         var authToken = new AuthToken(user.getUsername());
         authTokenDao.insert(authToken);

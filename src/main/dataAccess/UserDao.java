@@ -21,7 +21,7 @@ public class UserDao {
      * The HashMap of games in the database
      * The key is the username, and the value is the {@link User} object
      */
-    private HashMap<String, User> users;
+    private final HashMap<String, User> users;
 
     /**
      * Private constructor for the {@link UserDao} class
@@ -59,36 +59,6 @@ public class UserDao {
         users.put(user.getUsername(), user);
     }
 
-
-    /**
-     * Updates a user in the database
-     *
-     * @param username the username of the user to be updated
-     * @param user     the {@link User} to be updated
-     * @throws DataAccessException if there is no user with the given username in the database,
-     *                             or if there is another error
-     */
-    public void update(String username, User user) throws DataAccessException {
-        if (!users.containsKey(username)) {
-            throw new DataAccessException("User not found");
-        }
-        users.put(username, user);
-    }
-
-    /**
-     * Deletes a user from the database
-     *
-     * @param username the username of the user to be deleted
-     * @throws DataAccessException if there is no user with the given username in the database,
-     *                             or if there is another error
-     */
-    public void delete(String username) throws DataAccessException {
-        if (!users.containsKey(username)) {
-            throw new DataAccessException("User not found");
-        }
-        users.remove(username);
-    }
-
     /**
      * Finds a user in the database
      *
@@ -107,8 +77,7 @@ public class UserDao {
      * @throws DataAccessException if there is an error accessing the database.
      */
     public ArrayList<User> findAll() throws DataAccessException {
-        // TODO: implement
-        return null;
+        return new ArrayList<>(users.values());
     }
 
     /**
