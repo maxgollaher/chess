@@ -17,7 +17,6 @@ class AdminServiceTest {
     private static final UserDao userDao = UserDao.getInstance();
     private static final AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
     private static final GameDao gameDao = GameDao.getInstance();
-
     private static final AdminService testAdmin = new AdminService();
 
     @BeforeEach

@@ -2,10 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
-import handlers.AdminHandler;
-import handlers.GameHandler;
-import handlers.SessionHandler;
-import handlers.UserHandler;
+import handlers.*;
 import spark.Request;
 import spark.Response;
 
@@ -94,24 +91,11 @@ public class Server {
         delete("/db", this::clear);
 
         // error handling
-        get("/error", this::throwError);
         exception(DataAccessException.class, this::errorHandler);
         notFound((req, res) -> {
             var msg = String.format("[%s] %s not found", req.requestMethod(), req.pathInfo());
             return errorHandler(new DataAccessException(msg), req, res);
         });
-    }
-
-    /**
-     * Throws an exception.
-     *
-     * @param request  the request object.
-     * @param response the response object.
-     * @return the response body.
-     * @throws DataAccessException always.
-     */
-    private Object throwError(Request request, Response response) throws DataAccessException {
-        throw new DataAccessException("Server is on fire!");
     }
 
     /**

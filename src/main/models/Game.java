@@ -28,7 +28,7 @@ public class Game {
     /**
      * The name of the game.
      */
-    private String gameName;
+    private final String gameName;
     /**
      * The game object itself.
      *

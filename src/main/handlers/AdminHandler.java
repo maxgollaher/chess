@@ -7,7 +7,6 @@ import spark.Response;
 
 import java.util.Map;
 
-
 /**
  * Handler for /db endpoints.
  */

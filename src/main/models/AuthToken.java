@@ -1,17 +1,12 @@
 package models;
 
-import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Represents an authentication token. Contains the token itself and the username of the user it belongs to.
  */
 public class AuthToken {
-
-    private static final SecureRandom secureRandom = new SecureRandom();
-    private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
-
 
     /**
      * The authentication token.
@@ -45,25 +40,15 @@ public class AuthToken {
      * @return a new authentication token.
      */
     public static String generateNewToken() {
-        byte[] randomBytes = new byte[24];
-        secureRandom.nextBytes(randomBytes);
-        return base64Encoder.encodeToString(randomBytes);
+        return UUID.randomUUID().toString();
     }
 
     public String getAuthToken() {
         return authToken;
     }
 
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
-    }
-
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     @Override

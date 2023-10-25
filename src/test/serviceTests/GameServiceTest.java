@@ -19,7 +19,6 @@ class GameServiceTest {
     private static final GameDao gameDao = GameDao.getInstance();
     private static final AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
     private static final UserDao userDao = UserDao.getInstance();
-
     private static final User testUser = new User("testUser", "12345678", "test@test.com");
     private static final AuthToken testToken = new AuthToken(testUser.getUsername());
 

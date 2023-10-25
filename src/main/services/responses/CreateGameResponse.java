@@ -1,10 +1,8 @@
 package services.responses;
 
-import services.GameService;
-import services.requests.CreateGameRequest;
 
 /**
- * Response object for the {@link GameService#createGame(CreateGameRequest)} method.
+ * Response object for the {@link services.GameService#createGame(services.requests.CreateGameRequest)} method.
  *
  * @param gameID The id of the game that was created.
  */

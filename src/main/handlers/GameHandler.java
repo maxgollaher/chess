@@ -18,7 +18,6 @@ public class GameHandler {
 
     private static final GameService gameService = new GameService();
 
-
     /**
      * Joins a game based on a given JoinGameRequest
      *

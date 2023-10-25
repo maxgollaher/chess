@@ -16,7 +16,6 @@ import services.responses.LoginResponse;
 class SessionServiceTest {
 
     private static final SessionService sessionService = new SessionService();
-
     private static final AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
     private static final UserDao userDao = UserDao.getInstance();
     private static final User testUser = new User("testUser", "12345678", "test@test.com");
