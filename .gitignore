@@ -36,3 +36,5 @@ bin/
 .DS_Store
 /javadocs.zip
 /javadocs/
+
+*.svg
