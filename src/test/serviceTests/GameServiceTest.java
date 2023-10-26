@@ -115,7 +115,7 @@ class GameServiceTest {
     void listFailure() {
         // due to the structure of the program, the user will always be authenticated prior to
         // when the listGames function is called, so the only failure case would be if the DAO fails
-        // making this test case unnecessary and impossible to make for the scope of testing only
+        // making this test case unnecessary and impossible to make  for the scope of testing only
         // the listGames function
     }
 }
