@@ -10,7 +10,7 @@ import java.util.HashMap;
  * Currently, it uses a HashMap to store the users in memory. It will
  * eventually be replaced with a MySQL database.
  */
-public class UserDao {
+public class UserDao extends Database {
 
     /**
      * The singleton instance of the {@link UserDao} class

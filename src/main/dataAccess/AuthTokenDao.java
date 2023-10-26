@@ -10,7 +10,7 @@ import java.util.HashMap;
  * Currently, it uses a HashMap to store the authTokens in memory. It will
  * eventually be replaced with a MySQL database.
  */
-public class AuthTokenDao {
+public class AuthTokenDao extends Database {
 
     /**
      * The singleton instance of the {@link AuthTokenDao} class

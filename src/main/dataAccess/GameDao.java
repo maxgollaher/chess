@@ -11,7 +11,7 @@ import java.util.HashMap;
  * Currently, it uses a HashMap to store the games in memory. This will eventually
  * be replaced with a MySQL database.
  */
-public class GameDao {
+public class GameDao extends Database {
 
     /**
      * The singleton instance of the {@link GameDao} class
