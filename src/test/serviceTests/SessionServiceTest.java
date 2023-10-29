@@ -2,6 +2,7 @@ package serviceTests;
 
 import dataAccess.AuthTokenDao;
 import dataAccess.DataAccessException;
+import dataAccess.GameDao;
 import dataAccess.UserDao;
 import models.AuthToken;
 import models.User;
@@ -16,15 +17,27 @@ import services.responses.LoginResponse;
 class SessionServiceTest {
 
     private static final SessionService sessionService = new SessionService();
-    private static final AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
-    private static final UserDao userDao = UserDao.getInstance();
+    private static final AuthTokenDao authTokenDao;
+    private static final UserDao userDao;
+    private static final GameDao gameDao;
     private static final User testUser = new User("testUser", "12345678", "test@test.com");
+
+    static {
+        try {
+            authTokenDao = new AuthTokenDao();
+            userDao = new UserDao();
+            gameDao = new GameDao();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
     @BeforeEach
     void setUp() {
-        Assertions.assertDoesNotThrow(userDao::clear);
         Assertions.assertDoesNotThrow(authTokenDao::clear);
+        Assertions.assertDoesNotThrow(gameDao::clear);
+        Assertions.assertDoesNotThrow(userDao::clear);
 
         // check that the database is clear to start
         Assertions.assertTrue(Assertions.assertDoesNotThrow(userDao::findAll).isEmpty());

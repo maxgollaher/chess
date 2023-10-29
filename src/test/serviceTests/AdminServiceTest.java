@@ -1,6 +1,7 @@
 package serviceTests;
 
 import dataAccess.AuthTokenDao;
+import dataAccess.DataAccessException;
 import dataAccess.GameDao;
 import dataAccess.UserDao;
 import models.AuthToken;
@@ -14,16 +15,26 @@ import services.AdminService;
 
 class AdminServiceTest {
 
-    private static final UserDao userDao = UserDao.getInstance();
-    private static final AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
-    private static final GameDao gameDao = GameDao.getInstance();
+    private static final UserDao userDao;
+    private static final AuthTokenDao authTokenDao;
+    private static final GameDao gameDao;
     private static final AdminService testAdmin = new AdminService();
+
+    static {
+        try {
+            authTokenDao = new AuthTokenDao();
+            userDao = new UserDao();
+            gameDao = new GameDao();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @BeforeEach
     void setup() {
+        Assertions.assertDoesNotThrow(gameDao::clear);
         Assertions.assertDoesNotThrow(userDao::clear);
         Assertions.assertDoesNotThrow(authTokenDao::clear);
-        Assertions.assertDoesNotThrow(gameDao::clear);
 
         // check that the database is clear to start
         Assertions.assertTrue(Assertions.assertDoesNotThrow(userDao::findAll).isEmpty());

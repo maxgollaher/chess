@@ -14,6 +14,10 @@ public class Game {
      */
     private static int counter = 1;
     /**
+     * The name of the game.
+     */
+    private final String gameName;
+    /**
      * The id of the game.
      */
     private int gameID;
@@ -25,10 +29,6 @@ public class Game {
      * The username of the black player.
      */
     private String blackUsername;
-    /**
-     * The name of the game.
-     */
-    private final String gameName;
     /**
      * The game object itself.
      *
@@ -44,6 +44,21 @@ public class Game {
     public Game(String gameName) {
         this.gameName = gameName;
         this.gameID = counter++;
+        this.game = new chess.Game();
+    }
+
+    /**
+     * Creates a new Game object.
+     * @param gameID the id of the game.
+     * @param whiteUsername the username of the white player.
+     * @param blackUsername the username of the black player.
+     * @param gameName the name of the game.
+     */
+    public Game(int gameID, String whiteUsername, String blackUsername, String gameName) {
+        this.gameID = gameID;
+        this.whiteUsername = whiteUsername;
+        this.blackUsername = blackUsername;
+        this.gameName = gameName;
         this.game = new chess.Game();
     }
 

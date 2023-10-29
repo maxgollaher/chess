@@ -2,47 +2,58 @@ package dataAccess;
 
 import models.AuthToken;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * The AuthTokenDao class is responsible for accessing the {@link AuthToken} database.
- * Currently, it uses a HashMap to store the authTokens in memory. It will
- * eventually be replaced with a MySQL database.
+ * Currently, it uses a MySQL database to store the authTokens.
  */
-public class AuthTokenDao extends Database {
+public class AuthTokenDao {
+
+    private final Database db = new Database();
+
+    private static final String INSERT = "INSERT into authToken (authToken, username) VALUES (?,?)";
+    private static final String DELETE = "DELETE FROM authToken WHERE authToken = ?";
+    private static final String FIND = "SELECT * FROM authToken WHERE authToken = ?";
+    private static final String FIND_ALL = "SELECT * FROM authToken";
+    private static final String CLEAR = "DELETE FROM authToken";
 
     /**
-     * The singleton instance of the {@link AuthTokenDao} class
+     * Constructor for the {@link AuthTokenDao} class, configures the database to
+     * prepare to execute SQL statements
+     * @throws DataAccessException if there is an error accessing the database
      */
-    private static AuthTokenDao instance;
-
-    /**
-     * The HashMap of authTokens in the database,
-     * The key is the authToken string, and the value is the
-     * {@link AuthToken} object associated with that authToken string
-     */
-    private final HashMap<String, AuthToken> authTokens;
-
-    /**
-     * Private constructor for the {@link AuthTokenDao} class
-     * Since it is a singleton, it should not have a public constructor
-     */
-    private AuthTokenDao() {
-        this.authTokens = new HashMap<>();
+    public AuthTokenDao() throws DataAccessException {
+        configureDatabase();
     }
 
     /**
-     * Gets the {@link AuthTokenDao#instance} of the {@link AuthTokenDao} class.
-     * If there is no instance, it creates one through the private {@link AuthTokenDao#AuthTokenDao()} constructor
+     * Configures the database to prepare to execute SQL statements
      *
-     * @return the {@link AuthTokenDao#instance} of the {@link AuthTokenDao} class
+     * @throws DataAccessException when there is a problem accessing the database
+     *                             or creating the table
      */
-    public static AuthTokenDao getInstance() {
-        if (instance == null) {
-            instance = new AuthTokenDao();
+    private void configureDatabase() throws DataAccessException {
+        try (var conn = db.getConnection()) {
+            conn.setCatalog(Database.DB_NAME);
+            var createAuthTable = """
+                    CREATE TABLE IF NOT EXISTS authToken (
+                        authToken VARCHAR(255) NOT NULL,
+                        username VARCHAR(255) NOT NULL,
+                        PRIMARY KEY (authToken),
+                        FOREIGN KEY (username) REFERENCES user(username)
+                    )""";
+
+            try (var createTableStatement = conn.prepareStatement(createAuthTable)) {
+                createTableStatement.executeUpdate();
+            } catch (SQLException ex) {
+                throw new DataAccessException(ex.toString());
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
         }
-        return instance;
     }
 
     /**
@@ -53,7 +64,16 @@ public class AuthTokenDao extends Database {
      *                             or if there is another error
      */
     public void insert(AuthToken authToken) throws DataAccessException {
-        authTokens.put(authToken.getAuthToken(), authToken);
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement(INSERT)) {
+            preparedStatement.setString(1, authToken.getAuthToken());
+            preparedStatement.setString(2, authToken.getUsername());
+            preparedStatement.execute();
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
+        } finally {
+            db.returnConnection(conn);
+        }
     }
 
     /**
@@ -64,7 +84,15 @@ public class AuthTokenDao extends Database {
      *                             or if there is another error
      */
     public void delete(String token) throws DataAccessException {
-        authTokens.remove(token);
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement(DELETE)) {
+            preparedStatement.setString(1, token);
+            preparedStatement.execute();
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
+        } finally {
+            db.returnConnection(conn);
+        }
     }
 
     /**
@@ -75,7 +103,21 @@ public class AuthTokenDao extends Database {
      * @throws DataAccessException if there is an error accessing the database
      */
     public AuthToken find(String token) throws DataAccessException {
-        return authTokens.get(token);
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement(FIND)) {
+            preparedStatement.setString(1, token);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            System.out.println(resultSet);
+            if (resultSet.next()) {
+                return new AuthToken(resultSet.getString("authToken"), resultSet.getString("username"));
+            } else {
+                return null;
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
+        } finally {
+            db.returnConnection(conn);
+        }
     }
 
     /**
@@ -85,7 +127,19 @@ public class AuthTokenDao extends Database {
      * @throws DataAccessException if there is an error accessing the database
      */
     public ArrayList<AuthToken> findAll() throws DataAccessException {
-        return new ArrayList<>(authTokens.values());
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement(FIND_ALL)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            ArrayList<AuthToken> authTokens = new ArrayList<>();
+            while (resultSet.next()) {
+                authTokens.add(new AuthToken(resultSet.getString("authToken"), resultSet.getString("username")));
+            }
+            return authTokens;
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
+        } finally {
+            db.returnConnection(conn);
+        }
     }
 
     /**
@@ -94,7 +148,14 @@ public class AuthTokenDao extends Database {
      * @throws DataAccessException if there is an error accessing the database
      */
     public void clear() throws DataAccessException {
-        authTokens.clear();
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement(CLEAR)) {
+            preparedStatement.execute();
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
+        } finally {
+            db.returnConnection(conn);
+        }
     }
 
 

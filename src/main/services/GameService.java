@@ -24,13 +24,21 @@ public class GameService {
     /**
      * The {@link GameDao} to be used to access the game database
      */
-    private final GameDao gameDao = GameDao.getInstance();
+    private static final GameDao gameDao;
 
     /**
      * The {@link AuthTokenDao} to be used to access the {@link AuthToken} database
      */
-    private final AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
+    private static final AuthTokenDao authTokenDao;
 
+    static {
+        try {
+            authTokenDao = new AuthTokenDao();
+            gameDao = new GameDao();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Joins a player to a game based on a given JoinGameRequest

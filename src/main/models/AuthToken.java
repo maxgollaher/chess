@@ -35,6 +35,17 @@ public class AuthToken {
     }
 
     /**
+     * Creates a new AuthToken object.
+     *
+     * @param authToken the authentication token.
+     * @param username  the username of the user that the token belongs to.
+     */
+    public AuthToken(String authToken, String username) {
+        this.authToken = authToken;
+        this.username = username;
+    }
+
+    /**
      * Generates a new random authentication token.
      *
      * @return a new authentication token.

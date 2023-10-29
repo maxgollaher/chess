@@ -2,47 +2,57 @@ package dataAccess;
 
 import models.User;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * The UserDao class is responsible for accessing the {@link User} database.
- * Currently, it uses a HashMap to store the users in memory. It will
- * eventually be replaced with a MySQL database.
+ * Currently, it uses a MySQL database to store the user data.
  */
-public class UserDao extends Database {
+public class UserDao {
+
+    private static final String INSERT = "INSERT into user (username, password, email) VALUE (?,?,?)";
+    private static final String FIND = "SELECT * FROM user WHERE username = ?";
+    private static final String FIND_ALL = "SELECT * FROM user";
+    private static final String CLEAR = "DELETE FROM user";
+    private final Database db = new Database();
 
     /**
-     * The singleton instance of the {@link UserDao} class
+     * Constructor for the {@link UserDao} class, configures the database to
+     * prepare to execute SQL statements
+     *
+     * @throws DataAccessException if there is an error accessing the database
      */
-    private static UserDao instance;
-
-    /**
-     * The HashMap of games in the database
-     * The key is the username, and the value is the {@link User} object
-     */
-    private final HashMap<String, User> users;
-
-    /**
-     * Private constructor for the {@link UserDao} class
-     * Since it is a singleton, it should not have a public constructor
-     * It creates the {@link UserDao#users} HashMap
-     */
-    private UserDao() {
-        this.users = new HashMap<>();
+    public UserDao() throws DataAccessException {
+        configureDatabase();
     }
 
     /**
-     * Gets the {@link UserDao#instance} of the {@link UserDao} class.
-     * If there is no instance, it creates one through the private {@link UserDao#UserDao()} constructor
+     * Configures the database to prepare to execute SQL statements
      *
-     * @return the {@link UserDao#instance} of the {@link UserDao} class
+     * @throws DataAccessException when there is a problem accessing the database
+     *                             or creating the table
      */
-    public static UserDao getInstance() {
-        if (instance == null) {
-            instance = new UserDao();
+    private void configureDatabase() throws DataAccessException {
+        try (var conn = db.getConnection()) {
+            conn.setCatalog(Database.DB_NAME);
+            var createUserTable = """
+                    CREATE TABLE IF NOT EXISTS user (
+                        username VARCHAR(255) NOT NULL,
+                        password VARCHAR(255) NOT NULL,
+                        email VARCHAR(255) NOT NULL,
+                        PRIMARY KEY (username)
+                    )""";
+
+            try (var createTableStatement = conn.prepareStatement(createUserTable)) {
+                createTableStatement.executeUpdate();
+            } catch (SQLException ex) {
+                throw new DataAccessException(ex.toString());
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
         }
-        return instance;
     }
 
     /**
@@ -53,10 +63,20 @@ public class UserDao extends Database {
      *                             or if there is another error
      */
     public void insert(User user) throws DataAccessException {
-        if (users.containsKey(user.getUsername())) {
+        if (find(user.getUsername()) != null) {
             throw new DataAccessException("already taken");
         }
-        users.put(user.getUsername(), user);
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement(INSERT)) {
+            preparedStatement.setString(1, user.getUsername());
+            preparedStatement.setString(2, user.getPassword());
+            preparedStatement.setString(3, user.getEmail());
+            preparedStatement.execute();
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
+        } finally {
+            db.returnConnection(conn);
+        }
     }
 
     /**
@@ -67,7 +87,24 @@ public class UserDao extends Database {
      * @throws DataAccessException if there is an error accessing the database.
      */
     public User find(String username) throws DataAccessException {
-        return users.get(username);
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement(FIND)) {
+            preparedStatement.setString(1, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return new User(
+                        resultSet.getString("username"),
+                        resultSet.getString("password"),
+                        resultSet.getString("email")
+                );
+            } else {
+                return null;
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
+        } finally {
+            db.returnConnection(conn);
+        }
     }
 
     /**
@@ -77,7 +114,23 @@ public class UserDao extends Database {
      * @throws DataAccessException if there is an error accessing the database.
      */
     public ArrayList<User> findAll() throws DataAccessException {
-        return new ArrayList<>(users.values());
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement(FIND_ALL)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            ArrayList<User> users = new ArrayList<>();
+            while (resultSet.next()) {
+                users.add(new User(
+                        resultSet.getString("username"),
+                        resultSet.getString("password"),
+                        resultSet.getString("email")
+                ));
+            }
+            return users;
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
+        } finally {
+            db.returnConnection(conn);
+        }
     }
 
     /**
@@ -86,7 +139,14 @@ public class UserDao extends Database {
      * @throws DataAccessException if there is an error accessing the database.
      */
     public void clear() throws DataAccessException {
-        users.clear();
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement(CLEAR)) {
+            preparedStatement.execute();
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
+        } finally {
+            db.returnConnection(conn);
+        }
     }
 
 }

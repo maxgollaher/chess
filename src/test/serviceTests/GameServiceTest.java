@@ -16,18 +16,29 @@ import services.responses.ListGamesResponse;
 class GameServiceTest {
 
     private static final GameService gameService = new GameService();
-    private static final GameDao gameDao = GameDao.getInstance();
-    private static final AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
-    private static final UserDao userDao = UserDao.getInstance();
+    private static final GameDao gameDao;
+    private static final AuthTokenDao authTokenDao;
+    private static final UserDao userDao;
     private static final User testUser = new User("testUser", "12345678", "test@test.com");
     private static final AuthToken testToken = new AuthToken(testUser.getUsername());
+
+    static {
+        try {
+            authTokenDao = new AuthTokenDao();
+            userDao = new UserDao();
+            gameDao = new GameDao();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 
 
     @BeforeEach
     void setUp() {
-        Assertions.assertDoesNotThrow(userDao::clear);
         Assertions.assertDoesNotThrow(gameDao::clear);
+        Assertions.assertDoesNotThrow(userDao::clear);
         Assertions.assertDoesNotThrow(authTokenDao::clear);
 
         // check that the database is clear to start
@@ -108,14 +119,5 @@ class GameServiceTest {
         Assertions.assertEquals(2, listGamesResponse.games().size());
         Assertions.assertTrue(listGamesResponse.games().contains(testGame1));
         Assertions.assertTrue(listGamesResponse.games().contains(testGame2));
-    }
-
-    @Test
-    @DisplayName("List Games Failure")
-    void listFailure() {
-        // due to the structure of the program, the user will always be authenticated prior to
-        // when the listGames function is called, so the only failure case would be if the DAO fails
-        // making this test case unnecessary and impossible to make  for the scope of testing only
-        // the listGames function
     }
 }

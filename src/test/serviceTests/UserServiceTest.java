@@ -2,6 +2,7 @@ package serviceTests;
 
 import dataAccess.AuthTokenDao;
 import dataAccess.DataAccessException;
+import dataAccess.GameDao;
 import dataAccess.UserDao;
 import models.User;
 import org.junit.jupiter.api.Assertions;
@@ -14,14 +15,26 @@ import services.responses.LoginResponse;
 
 class UserServiceTest {
 
-    private static final UserDao userDao = UserDao.getInstance();
-    private static final AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
+    private static final UserDao userDao;
+    private static final AuthTokenDao authTokenDao;
+    private static final GameDao gameDao;
     private static final UserService userService = new UserService();
     private static final User testUser = new User("testUser", "12345678", "test@test.com");
+
+    static {
+        try {
+            authTokenDao = new AuthTokenDao();
+            userDao = new UserDao();
+            gameDao = new GameDao();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
     @BeforeEach
     void setUp() {
+        Assertions.assertDoesNotThrow(gameDao::clear);
         Assertions.assertDoesNotThrow(userDao::clear);
         Assertions.assertDoesNotThrow(authTokenDao::clear);
 

@@ -17,12 +17,21 @@ public class UserService {
     /**
      * The {@link UserDao} to be used to access the {@link User} database
      */
-    private final UserDao userDao = UserDao.getInstance();
+    private static final UserDao userDao;
 
     /**
      * The {@link AuthTokenDao} to be used to access the {@link AuthToken} database
      */
-    private final AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
+    private static final AuthTokenDao authTokenDao;
+
+    static {
+        try {
+            authTokenDao = new AuthTokenDao();
+            userDao = new UserDao();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Registers a new user based on a given RegisterRequest

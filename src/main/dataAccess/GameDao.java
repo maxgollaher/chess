@@ -3,47 +3,62 @@ package dataAccess;
 import chess.ChessGame;
 import models.Game;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * The GameDao class is responsible for accessing the {@link Game} database.
  * Currently, it uses a HashMap to store the games in memory. This will eventually
  * be replaced with a MySQL database.
  */
-public class GameDao extends Database {
+public class GameDao {
+
+    private static final String INSERT = "INSERT into game (gameID, whiteUsername, blackUsername, gameName) VALUES (?,?,?,?)";
+    private static final String FIND = "SELECT * FROM game WHERE gameID = ?";
+    private static final String FIND_ALL = "SELECT * FROM game";
+    private static final String CLEAR = "DELETE FROM game";
+    private static final String UPDATE = "UPDATE game SET whiteUsername = ?, blackUsername = ?, gameName = ? WHERE gameID = ?";
+    private final Database db = new Database();
 
     /**
-     * The singleton instance of the {@link GameDao} class
+     * Constructor for the {@link GameDao} class, configures the database to
+     * prepare to execute SQL statements
+     *
+     * @throws DataAccessException if there is an error accessing the database
      */
-    private static GameDao instance;
-
-    /**
-     * The HashMap of games in the database
-     * The key is the gameId, and the value is the {@link Game} object
-     */
-    private final HashMap<Integer, Game> games;
-
-    /**
-     * Private constructor for the {@link GameDao} class
-     * Since it is a singleton, it should not have a public constructor
-     * It creates the {@link GameDao#games} HashMap
-     */
-    private GameDao() {
-        this.games = new HashMap<>();
+    public GameDao() throws DataAccessException {
+        configureDatabase();
     }
 
     /**
-     * Gets the {@link GameDao#instance} of the {@link GameDao} class.
-     * If there is no instance, it creates one through the private constructor
+     * Configures the database to prepare to execute SQL statements
      *
-     * @return the {@link GameDao#instance} of the {@link GameDao} class
+     * @throws DataAccessException when there is a problem accessing the database
+     *                             or creating the table
      */
-    public static GameDao getInstance() {
-        if (instance == null) {
-            instance = new GameDao();
+    private void configureDatabase() throws DataAccessException {
+        try (var conn = db.getConnection()) {
+            conn.setCatalog(Database.DB_NAME);
+            var createUserTable = """
+                    CREATE TABLE IF NOT EXISTS game (
+                        gameID INT NOT NULL,
+                        whiteUsername VARCHAR(255),
+                        blackUsername VARCHAR(255),
+                        gameName VARCHAR(255) NOT NULL,
+                        PRIMARY KEY (gameID),
+                        FOREIGN KEY (whiteUsername) REFERENCES user(username),
+                        FOREIGN KEY (blackUsername) REFERENCES user(username)
+                    )""";
+
+            try (var createTableStatement = conn.prepareStatement(createUserTable)) {
+                createTableStatement.executeUpdate();
+            } catch (SQLException ex) {
+                throw new DataAccessException(ex.toString());
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
         }
-        return instance;
     }
 
     /**
@@ -53,10 +68,21 @@ public class GameDao extends Database {
      * @throws DataAccessException if there is already a game with the same id in the database
      */
     public void insert(Game game) throws DataAccessException {
-        if (games.containsKey(game.getGameID())) {
+        if (find(game.getGameID()) != null) {
             throw new DataAccessException("game already exists");
         }
-        games.put(game.getGameID(), game);
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement(INSERT)) {
+            preparedStatement.setInt(1, game.getGameID());
+            preparedStatement.setString(2, game.getWhiteUsername());
+            preparedStatement.setString(3, game.getBlackUsername());
+            preparedStatement.setString(4, game.getGameName());
+            preparedStatement.execute();
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
+        } finally {
+            db.returnConnection(conn);
+        }
     }
 
     /**
@@ -68,7 +94,7 @@ public class GameDao extends Database {
      * @throws DataAccessException if both spots are already taken when the player tries to claim a spot
      */
     public void claimSpot(String username, ChessGame.TeamColor playerColor, int gameID) throws DataAccessException {
-        var game = games.get(gameID);
+        var game = find(gameID);
 
         // check if the user only wants to spectate
         if (playerColor == null) {
@@ -92,6 +118,31 @@ public class GameDao extends Database {
                 }
                 break;
         }
+        updateGame(gameID, game);
+    }
+
+    /**
+     * Updates a game in the database
+     *
+     * @param gameID the id of the game to be updated
+     * @param game   the {@link Game} to be updated
+     * @throws DataAccessException if there is an error updating the game,
+     *                             such as a ForeignKey constraint error the user
+     *                             doesn't exist in the user table
+     */
+    public void updateGame(int gameID, models.Game game) throws DataAccessException {
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement(UPDATE)) {
+            preparedStatement.setString(1, game.getWhiteUsername());
+            preparedStatement.setString(2, game.getBlackUsername());
+            preparedStatement.setString(3, game.getGameName());
+            preparedStatement.setInt(4, gameID);
+            preparedStatement.execute();
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
+        } finally {
+            db.returnConnection(conn);
+        }
     }
 
     /**
@@ -101,8 +152,26 @@ public class GameDao extends Database {
      * @return the {@link Game} with the given id or null if it does not exist
      * @throws DataAccessException if there is an error accessing the database
      */
-    public Game find(int gameID) throws DataAccessException {
-        return games.get(gameID);
+    public models.Game find(int gameID) throws DataAccessException {
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement(FIND)) {
+            preparedStatement.setInt(1, gameID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return new Game(
+                        resultSet.getInt("gameID"),
+                        resultSet.getString("whiteUsername"),
+                        resultSet.getString("blackUsername"),
+                        resultSet.getString("gameName")
+                );
+            } else {
+                return null;
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
+        } finally {
+            db.returnConnection(conn);
+        }
     }
 
     /**
@@ -113,7 +182,24 @@ public class GameDao extends Database {
      * @throws DataAccessException if there is an error accessing the database
      */
     public ArrayList<Game> findAll() throws DataAccessException {
-        return new ArrayList<>(games.values());
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement(FIND_ALL)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            ArrayList<Game> games = new ArrayList<>();
+            while (resultSet.next()) {
+                games.add(new Game(
+                        resultSet.getInt("gameID"),
+                        resultSet.getString("whiteUsername"),
+                        resultSet.getString("blackUsername"),
+                        resultSet.getString("gameName")
+                ));
+            }
+            return games;
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
+        } finally {
+            db.returnConnection(conn);
+        }
     }
 
     /**
@@ -122,7 +208,14 @@ public class GameDao extends Database {
      * @throws DataAccessException if there is an error accessing the database
      */
     public void clear() throws DataAccessException {
-        games.clear();
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement(CLEAR)) {
+            preparedStatement.execute();
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.toString());
+        } finally {
+            db.returnConnection(conn);
+        }
     }
 
 

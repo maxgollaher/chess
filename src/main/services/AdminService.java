@@ -18,17 +18,27 @@ public class AdminService {
     /**
      * The {@link AuthTokenDao} to be used to access the {@link AuthToken} database
      */
-    private final AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
+    private static final AuthTokenDao authTokenDao;
 
     /**
      * The {@link GameDao} to be used to access the {@link Game} database
      */
-    private final GameDao gameDao = GameDao.getInstance();
+    private static final GameDao gameDao;
 
     /**
      * The {@link UserDao} to be used to access the {@link User} database
      */
-    private final UserDao userDao = UserDao.getInstance();
+    private static final UserDao userDao;
+
+    static {
+        try {
+            authTokenDao = new AuthTokenDao();
+            userDao = new UserDao();
+            gameDao = new GameDao();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Clears all data from the database. This is used for testing purposes, and no

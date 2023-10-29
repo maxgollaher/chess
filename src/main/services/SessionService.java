@@ -18,12 +18,21 @@ public class SessionService {
     /**
      * The {@link AuthTokenDao} to be used to access the {@link AuthToken} database
      */
-    private final AuthTokenDao authTokenDao = AuthTokenDao.getInstance();
+    private static final AuthTokenDao authTokenDao;
 
     /**
      * The {@link UserDao} to be used to access the {@link User} database
      */
-    private final UserDao userDao = UserDao.getInstance();
+    private static final UserDao userDao;
+
+    static {
+        try {
+            authTokenDao = new AuthTokenDao();
+            userDao = new UserDao();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Logs in a user based on a given {@link LoginRequest}
