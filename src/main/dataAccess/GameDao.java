@@ -1,6 +1,10 @@
 package dataAccess;
 
+import chess.Board;
+import chess.ChessBoard;
 import chess.ChessGame;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import models.Game;
 
 import java.sql.ResultSet;
@@ -14,11 +18,11 @@ import java.util.ArrayList;
  */
 public class GameDao {
 
-    private static final String INSERT = "INSERT into game (gameID, whiteUsername, blackUsername, gameName) VALUES (?,?,?,?)";
+    private static final String INSERT = "INSERT into game (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?,?,?,?,?)";
     private static final String FIND = "SELECT * FROM game WHERE gameID = ?";
     private static final String FIND_ALL = "SELECT * FROM game";
     private static final String CLEAR = "DELETE FROM game";
-    private static final String UPDATE = "UPDATE game SET whiteUsername = ?, blackUsername = ?, gameName = ? WHERE gameID = ?";
+    private static final String UPDATE = "UPDATE game SET whiteUsername = ?, blackUsername = ? WHERE gameID = ?";
     private final Database db = new Database();
 
     /**
@@ -46,6 +50,7 @@ public class GameDao {
                         whiteUsername VARCHAR(255),
                         blackUsername VARCHAR(255),
                         gameName VARCHAR(255) NOT NULL,
+                        game longtext NOT NULL,
                         PRIMARY KEY (gameID),
                         FOREIGN KEY (whiteUsername) REFERENCES user(username),
                         FOREIGN KEY (blackUsername) REFERENCES user(username)
@@ -77,6 +82,9 @@ public class GameDao {
             preparedStatement.setString(2, game.getWhiteUsername());
             preparedStatement.setString(3, game.getBlackUsername());
             preparedStatement.setString(4, game.getGameName());
+            var gameJson = new Gson().toJson(game.getGame());
+            System.out.println("JSON Data to Database: " + gameJson);
+            preparedStatement.setString(5, gameJson);
             preparedStatement.execute();
         } catch (SQLException ex) {
             throw new DataAccessException(ex.toString());
@@ -97,9 +105,7 @@ public class GameDao {
         var game = find(gameID);
 
         // check if the user only wants to spectate
-        if (playerColor == null) {
-            return;
-        }
+        if (playerColor == null) return;
 
         // check if the spot is taken, if it is, throw an exception
         switch (playerColor) {
@@ -118,7 +124,7 @@ public class GameDao {
                 }
                 break;
         }
-        updateGame(gameID, game);
+        updatePlayers(gameID, game);
     }
 
     /**
@@ -130,13 +136,12 @@ public class GameDao {
      *                             such as a ForeignKey constraint error the user
      *                             doesn't exist in the user table
      */
-    public void updateGame(int gameID, models.Game game) throws DataAccessException {
+    public void updatePlayers(int gameID, models.Game game) throws DataAccessException {
         var conn = db.getConnection();
         try (var preparedStatement = conn.prepareStatement(UPDATE)) {
             preparedStatement.setString(1, game.getWhiteUsername());
             preparedStatement.setString(2, game.getBlackUsername());
-            preparedStatement.setString(3, game.getGameName());
-            preparedStatement.setInt(4, gameID);
+            preparedStatement.setInt(3, gameID);
             preparedStatement.execute();
         } catch (SQLException ex) {
             throw new DataAccessException(ex.toString());
@@ -158,11 +163,18 @@ public class GameDao {
             preparedStatement.setInt(1, gameID);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
+                var json = resultSet.getString("game");
+                System.out.println("JSON Data from Database: " + json);
+                var builder = new GsonBuilder();
+                builder.serializeNulls();
+                var game = builder.create().fromJson(json, chess.Game.class); // TODO: fix this
+                game.setBoard(new Board());
                 return new Game(
                         resultSet.getInt("gameID"),
                         resultSet.getString("whiteUsername"),
                         resultSet.getString("blackUsername"),
-                        resultSet.getString("gameName")
+                        resultSet.getString("gameName"),
+                        game
                 );
             } else {
                 return null;
@@ -187,11 +199,15 @@ public class GameDao {
             ResultSet resultSet = preparedStatement.executeQuery();
             ArrayList<Game> games = new ArrayList<>();
             while (resultSet.next()) {
+                var json = resultSet.getString("game");
+                var builder = new GsonBuilder();
+                var game = builder.create().fromJson(json, chess.Game.class); // TODO: fix this
                 games.add(new Game(
                         resultSet.getInt("gameID"),
                         resultSet.getString("whiteUsername"),
                         resultSet.getString("blackUsername"),
-                        resultSet.getString("gameName")
+                        resultSet.getString("gameName"),
+                        game
                 ));
             }
             return games;

@@ -12,17 +12,17 @@ import java.util.ArrayList;
  */
 public class AuthTokenDao {
 
-    private final Database db = new Database();
-
     private static final String INSERT = "INSERT into authToken (authToken, username) VALUES (?,?)";
     private static final String DELETE = "DELETE FROM authToken WHERE authToken = ?";
     private static final String FIND = "SELECT * FROM authToken WHERE authToken = ?";
     private static final String FIND_ALL = "SELECT * FROM authToken";
     private static final String CLEAR = "DELETE FROM authToken";
+    private final Database db = new Database();
 
     /**
      * Constructor for the {@link AuthTokenDao} class, configures the database to
      * prepare to execute SQL statements
+     *
      * @throws DataAccessException if there is an error accessing the database
      */
     public AuthTokenDao() throws DataAccessException {

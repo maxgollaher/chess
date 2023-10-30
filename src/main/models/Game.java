@@ -54,12 +54,12 @@ public class Game {
      * @param blackUsername the username of the black player.
      * @param gameName the name of the game.
      */
-    public Game(int gameID, String whiteUsername, String blackUsername, String gameName) {
+    public Game(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {
         this.gameID = gameID;
         this.whiteUsername = whiteUsername;
         this.blackUsername = blackUsername;
         this.gameName = gameName;
-        this.game = new chess.Game();
+        this.game = game;
     }
 
     public int getGameID() {
