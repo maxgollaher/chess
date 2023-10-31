@@ -34,11 +34,17 @@ public class Piece implements ChessPiece {
     private static int counter = 1;
     private final ChessGame.TeamColor teamColor;
     private final PieceType pieceType;
-    private final int id = counter++;
+    private int id = counter++;
 
     public Piece(ChessGame.TeamColor teamColor, PieceType pieceType) {
         this.teamColor = teamColor;
         this.pieceType = pieceType;
+    }
+
+    public Piece(ChessGame.TeamColor teamColor, PieceType pieceType, int id) {
+        this.teamColor = teamColor;
+        this.pieceType = pieceType;
+        this.id = id;
     }
 
     /**

@@ -1,15 +1,20 @@
 package serviceTests;
 
 import chess.ChessGame;
+import dataAccess.AuthTokenDao;
+import dataAccess.DataAccessException;
+import dataAccess.GameDao;
+import dataAccess.UserDao;
 import models.AuthToken;
 import models.Game;
 import models.User;
-import org.junit.jupiter.api.*;
-
-import dataAccess.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import services.GameService;
-import services.requests.JoinGameRequest;
 import services.requests.CreateGameRequest;
+import services.requests.JoinGameRequest;
 import services.responses.CreateGameResponse;
 import services.responses.ListGamesResponse;
 

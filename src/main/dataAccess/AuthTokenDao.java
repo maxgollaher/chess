@@ -107,7 +107,6 @@ public class AuthTokenDao {
         try (var preparedStatement = conn.prepareStatement(FIND)) {
             preparedStatement.setString(1, token);
             ResultSet resultSet = preparedStatement.executeQuery();
-            System.out.println(resultSet);
             if (resultSet.next()) {
                 return new AuthToken(resultSet.getString("authToken"), resultSet.getString("username"));
             } else {

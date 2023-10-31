@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Arrays;
+
 import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
 import static chess.ChessPiece.PieceType.*;
@@ -10,6 +12,10 @@ public class Board implements ChessBoard {
 
     public Board() {
         this.board = new ChessPiece[8][8];
+    }
+
+    public Board(ChessPiece[][] board) {
+        this.board = board;
     }
 
 
@@ -60,5 +66,27 @@ public class Board implements ChessBoard {
             row = new ChessPiece[]{new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN),};
         }
         return row;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for(ChessPiece[] row : board){
+            sb.append(Arrays.toString(row)).append('\n');
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Board board1 = (Board) o;
+        return Arrays.deepEquals(board, board1.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(board);
     }
 }

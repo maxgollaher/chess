@@ -14,6 +14,19 @@ public class Game implements ChessGame {
     private ChessPiece isEnPassant;
     private Set<ChessPiece> hasMoved = new HashSet<>();
 
+    public Game() {
+        this.teamTurn = TeamColor.WHITE;
+        this.board = new Board();
+        board.resetBoard();
+    }
+
+    public Game(Board board, TeamColor teamTurn, Piece isEnPassant, Set<ChessPiece> hasMoved) {
+        this.board = board;
+        this.teamTurn = teamTurn;
+        this.isEnPassant = isEnPassant;
+        this.hasMoved = hasMoved;
+    }
+
     /**
      * @return Which team's turn it is
      */
@@ -367,5 +380,10 @@ public class Game implements ChessGame {
     @Override
     public int hashCode() {
         return Objects.hash(teamTurn, board, isEnPassant, hasMoved);
+    }
+
+    @Override
+    public String toString() {
+        return teamTurn + "," + board.toString() + "," + isEnPassant + "," + hasMoved;
     }
 }
