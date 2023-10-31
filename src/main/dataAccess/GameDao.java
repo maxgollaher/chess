@@ -228,11 +228,16 @@ public class GameDao {
         }
     }
 
+    /**
+     * Deserializer for the {@link chess.Game} class
+     */
     public static class ChessGameAdapter implements JsonDeserializer<chess.Game> {
 
         @Override
         public chess.Game deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             var jsonObject = jsonElement.getAsJsonObject();
+
+            // give context to each element as necessary, boards are handled by ChessBoardAdapter, pieces are handled by ChessPieceAdapter
             chess.Board board = jsonDeserializationContext.deserialize(jsonObject.get("board"), chess.Board.class);
             ChessGame.TeamColor teamTurn = ChessGame.TeamColor.valueOf(jsonObject.get("teamTurn").getAsString());
             chess.Piece isEnPassant = jsonDeserializationContext.deserialize(jsonObject.get("isEnPassant"), chess.Piece.class);
@@ -241,27 +246,35 @@ public class GameDao {
         }
     }
 
+    /**
+     * Deserializer for the {@link chess.Board} class
+     */
     public static class ChessBoardAdapter implements JsonDeserializer<chess.Board> {
 
         @Override
         public chess.Board deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             var jsonObject = jsonElement.getAsJsonObject();
+
+            // give context to the pieces in the array
             chess.Piece[][] board = jsonDeserializationContext.deserialize(jsonObject.get("board"), chess.Piece[][].class);
             return new chess.Board(board);
         }
     }
 
+    /**
+     * Deserializer for the {@link chess.Piece} class
+     */
     public static class ChessPieceAdapter implements JsonDeserializer<chess.Piece> {
 
         @Override
         public chess.Piece deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             var jsonObject = jsonElement.getAsJsonObject();
+
+            // extract all elements, return a new piece with the same elements
             ChessGame.TeamColor teamColor = ChessGame.TeamColor.valueOf(jsonObject.get("teamColor").getAsString());
             ChessPiece.PieceType pieceType = ChessPiece.PieceType.valueOf(jsonObject.get("pieceType").getAsString());
             int id = jsonObject.get("id").getAsInt();
             return new chess.Piece(teamColor, pieceType, id);
         }
     }
-
-
 }
