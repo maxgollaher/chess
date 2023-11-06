@@ -1,7 +1,7 @@
 package daoTests;
 
-import dataAccess.UserDao;
 import dataAccess.DataAccessException;
+import dataAccess.UserDao;
 import models.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,19 +29,19 @@ public class UserDaoTest {
     @DisplayName("Test insert User")
     void testInsert() {
         // test inserting a new User
-        User testUser = new User("username","email","password");
+        User testUser = new User("username", "email", "password");
         Assertions.assertDoesNotThrow(() -> userDao.insert(testUser));
 
         // see if the User was inserted
-        var foundToken = Assertions.assertDoesNotThrow(() -> userDao.find("username"));
-        Assertions.assertEquals(testUser, foundToken);
+        var foundUser = Assertions.assertDoesNotThrow(() -> userDao.find("username"));
+        Assertions.assertEquals(testUser, foundUser);
     }
 
     @Test
     @DisplayName("Test insert User fail")
     void testInsertFail() {
         // test insert
-        User testUser = new User("username","email","password");
+        User testUser = new User("username", "email", "password");
         Assertions.assertDoesNotThrow(() -> userDao.insert(testUser));
 
         // test inserting a duplicate User with the same primary key
@@ -52,11 +52,11 @@ public class UserDaoTest {
     @DisplayName("Test find User")
     void testFind() {
         // test finding a User
-        User testUser = new User("username","email","password");
+        User testUser = new User("username", "email", "password");
         Assertions.assertDoesNotThrow(() -> userDao.insert(testUser));
 
-        var foundToken = Assertions.assertDoesNotThrow(() -> userDao.find("username"));
-        Assertions.assertEquals(testUser, foundToken);
+        var foundUser = Assertions.assertDoesNotThrow(() -> userDao.find("username"));
+        Assertions.assertEquals(testUser, foundUser);
     }
 
     @Test
@@ -70,16 +70,16 @@ public class UserDaoTest {
     @DisplayName("Test find all Users")
     void testFindAll() {
         // insert several Users
-        User testUser = new User("username","email","password");
-        User testUser2 = new User("username2","email2","password2");
+        User testUser = new User("username", "email", "password");
+        User testUser2 = new User("username2", "email2", "password2");
         Assertions.assertDoesNotThrow(() -> userDao.insert(testUser));
         Assertions.assertDoesNotThrow(() -> userDao.insert(testUser2));
 
         // see if the Users were found
-        var foundTokens = Assertions.assertDoesNotThrow(userDao::findAll);
-        Assertions.assertEquals(2, foundTokens.size());
-        Assertions.assertTrue(foundTokens.contains(testUser));
-        Assertions.assertTrue(foundTokens.contains(testUser2));
+        var foundUsers = Assertions.assertDoesNotThrow(userDao::findAll);
+        Assertions.assertEquals(2, foundUsers.size());
+        Assertions.assertTrue(foundUsers.contains(testUser));
+        Assertions.assertTrue(foundUsers.contains(testUser2));
     }
 
     @Test
@@ -93,7 +93,7 @@ public class UserDaoTest {
     @DisplayName("Test clear Users")
     void testClear() {
         // insert a User, assert that it is in the database
-        User testUser = new User("username","email","password");
+        User testUser = new User("username", "email", "password");
         Assertions.assertDoesNotThrow(() -> userDao.insert(testUser));
         Assertions.assertFalse(Assertions.assertDoesNotThrow(userDao::findAll).isEmpty());
 
@@ -101,10 +101,4 @@ public class UserDaoTest {
         Assertions.assertDoesNotThrow(userDao::clear);
         Assertions.assertTrue(Assertions.assertDoesNotThrow(userDao::findAll).isEmpty());
     }
-
-
-
-
-
-
 }

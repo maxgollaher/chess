@@ -136,7 +136,7 @@ public class GameDao {
      *                             such as a ForeignKey constraint error the user
      *                             doesn't exist in the user table
      */
-    public void updatePlayers(int gameID, models.Game game) throws DataAccessException {
+    private void updatePlayers(int gameID, models.Game game) throws DataAccessException {
         var conn = db.getConnection();
         try (var preparedStatement = conn.prepareStatement(UPDATE)) {
             preparedStatement.setString(1, game.getWhiteUsername());

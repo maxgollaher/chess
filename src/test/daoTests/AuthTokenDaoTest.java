@@ -2,14 +2,11 @@ package daoTests;
 
 import dataAccess.AuthTokenDao;
 import dataAccess.DataAccessException;
-import dataAccess.Database;
 import models.AuthToken;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.sql.Connection;
 
 public class AuthTokenDaoTest {
 
@@ -124,10 +121,4 @@ public class AuthTokenDaoTest {
         Assertions.assertDoesNotThrow(authTokenDao::clear);
         Assertions.assertTrue(Assertions.assertDoesNotThrow(authTokenDao::findAll).isEmpty());
     }
-
-
-
-
-
-
 }
