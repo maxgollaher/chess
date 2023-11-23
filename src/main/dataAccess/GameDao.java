@@ -1,15 +1,12 @@
 package dataAccess;
 
 import chess.ChessGame;
-import chess.ChessPiece;
 import com.google.gson.*;
 import models.Game;
-
-import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Set;
+import models.ModelSerializer;
 
 
 /**
@@ -163,7 +160,7 @@ public class GameDao {
             preparedStatement.setInt(1, gameID);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                return new models.Game(resultSet.getInt("gameID"), resultSet.getString("whiteUsername"), resultSet.getString("blackUsername"), resultSet.getString("gameName"), jsonToGame(resultSet));
+                return new models.Game(resultSet.getInt("gameID"), resultSet.getString("whiteUsername"), resultSet.getString("blackUsername"), resultSet.getString("gameName"), ModelSerializer.jsonToGame(resultSet));
             } else {
                 return null;
             }
@@ -187,7 +184,7 @@ public class GameDao {
             ResultSet resultSet = preparedStatement.executeQuery();
             ArrayList<models.Game> games = new ArrayList<>();
             while (resultSet.next()) {
-                games.add(new Game(resultSet.getInt("gameID"), resultSet.getString("whiteUsername"), resultSet.getString("blackUsername"), resultSet.getString("gameName"), jsonToGame(resultSet)));
+                games.add(new Game(resultSet.getInt("gameID"), resultSet.getString("whiteUsername"), resultSet.getString("blackUsername"), resultSet.getString("gameName"), ModelSerializer.jsonToGame(resultSet)));
             }
             return games;
         } catch (SQLException ex) {
@@ -195,21 +192,6 @@ public class GameDao {
         } finally {
             db.returnConnection(conn);
         }
-    }
-
-    /**
-     * Deserializes a game from the database
-     *
-     * @param resultSet the result set to deserialize
-     * @return the deserialized game
-     */
-    private chess.Game jsonToGame(ResultSet resultSet) throws SQLException {
-        var builder = new GsonBuilder();
-        builder.registerTypeAdapter(chess.Game.class, new ChessGameAdapter());
-        builder.registerTypeAdapter(chess.Board.class, new ChessBoardAdapter());
-        builder.registerTypeAdapter(chess.Piece.class, new ChessPieceAdapter());
-        var gson = builder.create();
-        return gson.fromJson(resultSet.getString("game"), chess.Game.class);
     }
 
     /**
@@ -228,53 +210,4 @@ public class GameDao {
         }
     }
 
-    /**
-     * Deserializer for the {@link chess.Game} class
-     */
-    public static class ChessGameAdapter implements JsonDeserializer<chess.Game> {
-
-        @Override
-        public chess.Game deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            var jsonObject = jsonElement.getAsJsonObject();
-
-            // give context to each element as necessary, boards are handled by ChessBoardAdapter, pieces are handled by ChessPieceAdapter
-            chess.Board board = jsonDeserializationContext.deserialize(jsonObject.get("board"), chess.Board.class);
-            ChessGame.TeamColor teamTurn = ChessGame.TeamColor.valueOf(jsonObject.get("teamTurn").getAsString());
-            chess.Piece isEnPassant = jsonDeserializationContext.deserialize(jsonObject.get("isEnPassant"), chess.Piece.class);
-            Set<chess.ChessPiece> hasMoved = jsonDeserializationContext.deserialize(jsonObject.get("hasMoved"), Set.class);
-            return new chess.Game(board, teamTurn, isEnPassant, hasMoved);
-        }
-    }
-
-    /**
-     * Deserializer for the {@link chess.Board} class
-     */
-    public static class ChessBoardAdapter implements JsonDeserializer<chess.Board> {
-
-        @Override
-        public chess.Board deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            var jsonObject = jsonElement.getAsJsonObject();
-
-            // give context to the pieces in the array
-            chess.Piece[][] board = jsonDeserializationContext.deserialize(jsonObject.get("board"), chess.Piece[][].class);
-            return new chess.Board(board);
-        }
-    }
-
-    /**
-     * Deserializer for the {@link chess.Piece} class
-     */
-    public static class ChessPieceAdapter implements JsonDeserializer<chess.Piece> {
-
-        @Override
-        public chess.Piece deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            var jsonObject = jsonElement.getAsJsonObject();
-
-            // extract all elements, return a new piece with the same elements
-            ChessGame.TeamColor teamColor = ChessGame.TeamColor.valueOf(jsonObject.get("teamColor").getAsString());
-            ChessPiece.PieceType pieceType = ChessPiece.PieceType.valueOf(jsonObject.get("pieceType").getAsString());
-            int id = jsonObject.get("id").getAsInt();
-            return new chess.Piece(teamColor, pieceType, id);
-        }
-    }
 }
