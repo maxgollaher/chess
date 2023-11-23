@@ -3,8 +3,8 @@ package handlers;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import services.UserService;
-import services.requests.RegisterRequest;
-import services.responses.LoginResponse;
+import requests.RegisterRequest;
+import responses.LoginResponse;
 import spark.Response;
 
 import java.util.Map;

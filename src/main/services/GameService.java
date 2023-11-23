@@ -5,10 +5,10 @@ import dataAccess.DataAccessException;
 import dataAccess.GameDao;
 import models.AuthToken;
 import models.Game;
-import services.requests.CreateGameRequest;
-import services.requests.JoinGameRequest;
-import services.responses.CreateGameResponse;
-import services.responses.ListGamesResponse;
+import requests.CreateGameRequest;
+import requests.JoinGameRequest;
+import responses.CreateGameResponse;
+import responses.ListGamesResponse;
 
 import java.util.ArrayList;
 

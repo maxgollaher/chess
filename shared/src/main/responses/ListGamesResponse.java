@@ -1,9 +1,9 @@
-package services.responses;
+package responses;
 
 import java.util.ArrayList;
 
 /**
- * Response object for the {@link services.GameService#listGames()} method.
+ * Response object for the ListGames method.
  *
  * @param games The {@link ArrayList} of games that are currently in the database.
  */

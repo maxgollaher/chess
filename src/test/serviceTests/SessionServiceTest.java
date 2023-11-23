@@ -11,8 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import services.SessionService;
-import services.requests.LoginRequest;
-import services.responses.LoginResponse;
+import requests.LoginRequest;
+import responses.LoginResponse;
 
 class SessionServiceTest {
 

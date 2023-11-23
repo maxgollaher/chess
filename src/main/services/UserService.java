@@ -5,8 +5,8 @@ import dataAccess.DataAccessException;
 import dataAccess.UserDao;
 import models.AuthToken;
 import models.User;
-import services.requests.RegisterRequest;
-import services.responses.LoginResponse;
+import requests.RegisterRequest;
+import responses.LoginResponse;
 
 /**
  * Interacts with the {@link UserDao} to register new users. It handles all requests

@@ -1,8 +1,8 @@
-package services.requests;
+package requests;
 
 
 /**
- * Immutable request object for the {@link services.SessionService#login(LoginRequest)} method.
+ * Immutable request object for the LoginRequest method.
  *
  * @param username The username of the user that is logging in.
  * @param password The password of the user that is logging in.

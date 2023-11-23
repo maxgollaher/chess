@@ -1,8 +1,8 @@
-package services.requests;
+package requests;
 
 
 /**
- * Immutable request object for the {@link services.GameService#joinGame(JoinGameRequest)} method.
+ * Immutable request object for the JoinGame method.
  *
  * @param playerColor The {@link chess.ChessGame.TeamColor} of the player that is joining the game. Can be left empty to
  *                    allow for watching the game.

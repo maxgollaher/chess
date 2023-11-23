@@ -4,7 +4,7 @@
 
 ### IntelliJ IDEA ###
 out/
-!**/src/main/**/out/
+!**/src/Client/**/out/
 !**/src/test/**/out/
 .idea/discord.xml
 .idea/libraries/*
@@ -19,7 +19,7 @@ out/
 .springBeans
 .sts4-cache
 bin/
-!**/src/main/**/bin/
+!**/src/Client/**/bin/
 !**/src/test/**/bin/
 
 ### NetBeans ###

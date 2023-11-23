@@ -1,8 +1,8 @@
-package services.requests;
+package requests;
 
 
 /**
- * Immutable request object for the {@link services.UserService#register(RegisterRequest)} method.
+ * Immutable request object for the RegisterRequest method.
  *
  * @param username The username of the user that is registering.
  * @param password The password of the user that is registering.

@@ -10,8 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import services.UserService;
-import services.requests.RegisterRequest;
-import services.responses.LoginResponse;
+import requests.RegisterRequest;
+import responses.LoginResponse;
 
 class UserServiceTest {
 

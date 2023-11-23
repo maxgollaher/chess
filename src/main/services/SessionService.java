@@ -5,8 +5,8 @@ import dataAccess.DataAccessException;
 import dataAccess.UserDao;
 import models.AuthToken;
 import models.User;
-import services.requests.LoginRequest;
-import services.responses.LoginResponse;
+import requests.LoginRequest;
+import responses.LoginResponse;
 
 /**
  * This class is responsible for handling all requests to the session

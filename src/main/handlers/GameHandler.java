@@ -3,10 +3,10 @@ package handlers;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import services.GameService;
-import services.requests.CreateGameRequest;
-import services.requests.JoinGameRequest;
-import services.responses.CreateGameResponse;
-import services.responses.ListGamesResponse;
+import requests.CreateGameRequest;
+import requests.JoinGameRequest;
+import responses.CreateGameResponse;
+import responses.ListGamesResponse;
 import spark.Response;
 
 import java.util.Map;
