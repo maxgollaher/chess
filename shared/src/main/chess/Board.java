@@ -61,7 +61,7 @@ public class Board implements ChessBoard {
     private ChessPiece[] setRow(ChessGame.TeamColor color, boolean isBackRow) {
         ChessPiece[] row;
         if (isBackRow) {
-            row = new ChessPiece[]{new Piece(color, ROOK), new Piece(color, KNIGHT), new Piece(color, BISHOP), new Piece(color, QUEEN), new Piece(color, KING), new Piece(color, BISHOP), new Piece(color, KNIGHT), new Piece(color, ROOK)};
+            row = new ChessPiece[]{new Piece(color, ROOK), new Piece(color, KNIGHT), new Piece(color, BISHOP), new Piece(color, KING), new Piece(color, QUEEN), new Piece(color, BISHOP), new Piece(color, KNIGHT), new Piece(color, ROOK)};
         } else {
             row = new ChessPiece[]{new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN), new Piece(color, PAWN),};
         }

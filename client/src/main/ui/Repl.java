@@ -1,6 +1,7 @@
 package ui;
 
 import java.util.Scanner;
+
 import static ui.EscapeSequences.*;
 
 public class Repl {
@@ -12,7 +13,7 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println("Welcome to 240 chess. Type Help to get started.");
+        System.out.printf("%s%s👑 Welcome to 240 chess. Type Help to get started 👑%n", WHITE, BOLD);
         System.out.print(client.help());
 
         Scanner scanner = new Scanner(System.in);
@@ -32,7 +33,7 @@ public class Repl {
     }
 
     private void printPrompt() {
-        System.out.print("\n" + UNICODE_ESCAPE + "[" + "]" + ">>> " + GREEN);
+        System.out.print("\n" + WHITE + "[" + client.getState().toString() + "]" + ">>> " + GREEN);
     }
 
 }

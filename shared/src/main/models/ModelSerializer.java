@@ -4,12 +4,14 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import chess.Game;
 import com.google.gson.*;
+import responses.ListGamesResponse;
 
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Set;
 
 public class ModelSerializer {
@@ -21,8 +23,10 @@ public class ModelSerializer {
     public static <T> T deserialize(Reader reader, Class<T> responseClass) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(chess.Game.class, new ChessGameAdapter());
+        gsonBuilder.registerTypeAdapter(chess.ChessGame.class, new ChessGameAdapter());
         gsonBuilder.registerTypeAdapter(chess.Board.class, new ChessBoardAdapter());
         gsonBuilder.registerTypeAdapter(chess.Piece.class, new ChessPieceAdapter());
+        gsonBuilder.registerTypeAdapter(ListGamesResponse.class, new ListGamesResponseAdapter());
         return gsonBuilder.create().fromJson(reader, responseClass);
     }
 
@@ -39,6 +43,21 @@ public class ModelSerializer {
         builder.registerTypeAdapter(chess.Piece.class, new ChessPieceAdapter());
         var gson = builder.create();
         return gson.fromJson(resultSet.getString("game"), chess.Game.class);
+    }
+
+    public static class ListGamesResponseAdapter implements JsonDeserializer<ListGamesResponse> {
+
+        @Override
+        public ListGamesResponse deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            var response = jsonElement.getAsJsonObject();
+            var responseGames = response.get("games");
+            ArrayList<models.Game> games = new ArrayList<>();
+            for (JsonElement game : responseGames.getAsJsonArray()) {
+                var deserializedGame = jsonDeserializationContext.deserialize(game, models.Game.class);
+                games.add((models.Game) deserializedGame);
+            }
+            return new ListGamesResponse(games);
+        }
     }
 
     /**
