@@ -116,4 +116,9 @@ public class ServerFacade {
         var request = new JoinGameRequest(playerColor, gameID);
         makeRequest("PUT", path, authToken, request, null);
     }
+
+    public void clear() throws ResponseException {
+        var path = "/db";
+        makeRequest("DELETE", path, null, null);
+    }
 }

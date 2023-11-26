@@ -22,6 +22,9 @@ public class ChessClient {
         server = new ServerFacade(serverUrl);
     }
 
+    /**
+     * Evaluates the input and returns the result.
+     */
     public String eval(String input) {
         try {
             var tokens = input.toLowerCase().split(" ");
