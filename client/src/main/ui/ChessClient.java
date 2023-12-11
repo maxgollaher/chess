@@ -163,7 +163,7 @@ public class ChessClient {
 
     private String printBoard(chess.ChessBoard board, ChessGame.TeamColor playerColor) {
         var sb = new StringBuilder();
-        var currentBG = BG_BLACK;
+        var currentBG = playerColor == ChessGame.TeamColor.WHITE ? BG_WHITE : BG_BLACK; // a1 is black
         var letters = playerColor == ChessGame.TeamColor.WHITE ? "    a  b  c  d  e  f  g  h    " : "    h  g  f  e  d  c  b  a    ";
         sb.append(BG_LIGHT_GRAY + BLACK + BOLD).append(letters).append(RESET_BG_COLOR).append('\n');
 
