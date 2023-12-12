@@ -6,9 +6,11 @@ import handlers.AdminHandler;
 import handlers.GameHandler;
 import handlers.SessionHandler;
 import handlers.UserHandler;
+import server.websocket.WebSocketHandler;
 import spark.Request;
 import spark.Response;
 
+import java.io.IOException;
 import java.util.Map;
 
 import static spark.Spark.*;
@@ -22,6 +24,8 @@ public class Server {
     private static final SessionHandler sessionHandler = new SessionHandler();
     private static final GameHandler gameHandler = new GameHandler();
     private static final AdminHandler adminHandler = new AdminHandler();
+
+    private static final WebSocketHandler webSocketHandler = new WebSocketHandler();
 
 
     /**
@@ -77,7 +81,9 @@ public class Server {
         port(port);
         System.out.println("Listening on port " + port);
         externalStaticFileLocation("web");
+        webSocket("/connect", webSocketHandler);
         createRoutes();
+        awaitInitialization();
     }
 
     /**
@@ -137,12 +143,13 @@ public class Server {
      * @param response the response object.
      * @return the response body.
      */
-    private Object joinGame(Request request, Response response) throws DataAccessException {
+    private Object joinGame(Request request, Response response) throws DataAccessException, IOException {
         var authToken = getHeader(request);
         var bodyObj = getBody(request);
         response.type("application/json");
         sessionHandler.authorizeUser(authToken, response);
         gameHandler.joinGame(bodyObj, authToken, response); // pass authToken in to later get the username
+        webSocketHandler.sendGame(bodyObj, authToken);
         return response.body();
     }
 

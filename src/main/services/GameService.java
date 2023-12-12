@@ -83,4 +83,14 @@ public class GameService {
         return new ListGamesResponse(gameList);
     }
 
+    /**
+     * Loads a game from the database
+     *
+     * @param gameID the id of the game to be loaded
+     * @return the {@link Game} with the given id or null if it does not exist
+     * @throws DataAccessException if there is an error accessing the database
+     */
+    public Game loadGame(int gameID) throws DataAccessException {
+        return gameDao.find(gameID);
+    }
 }
