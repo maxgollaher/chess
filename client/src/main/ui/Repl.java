@@ -49,26 +49,31 @@ public class Repl implements NotificationHandler {
         printPrompt();
     }
 
+    /**
+     * Receives a LoadGameMessage from the server and prints the board.
+     * Retrieves the team color from the client to orient the board.
+     */
     @Override
     public void loadGame(LoadGameMessage loadGameMessage) {
         models.Game game = ModelSerializer.deserialize(loadGameMessage.message(), models.Game.class);
-        var gameID = game.getGameID();
-        System.out.println(getJoinGameBoard(game.getGame(), gameID, client.teamColor));
+        System.out.println(getJoinGameBoard(game.getGame(), client.teamColor));
         printPrompt();
     }
 
-    private String getJoinGameBoard(ChessGame game, int gameID, ChessGame.TeamColor playerColor) {
+    /**
+     * Returns a string representation of the board in the correct orientation.
+     */
+    private String getJoinGameBoard(ChessGame game, ChessGame.TeamColor playerColor) {
         var sb = new StringBuilder();
         var chessBoard = game.getBoard();
-        sb.append("Joined game with ID: ").append(gameID).append("\n");
         if (playerColor == ChessGame.TeamColor.BLACK) {
-            sb.append(printBoard(chessBoard, ChessGame.TeamColor.BLACK)).append("\n\n");
+            sb.append(printBoard(chessBoard, ChessGame.TeamColor.BLACK));
         } else {
-            sb.append(printBoard(chessBoard, ChessGame.TeamColor.WHITE)).append("\n\n");
+            sb.append(printBoard(chessBoard, ChessGame.TeamColor.WHITE));
         }
         return sb.toString();
     }
-
+    
     private String printBoard(chess.ChessBoard board, ChessGame.TeamColor playerColor) {
         var sb = new StringBuilder();
         var currentBG = playerColor == ChessGame.TeamColor.WHITE ? BG_WHITE : BG_BLACK; // a1 is black

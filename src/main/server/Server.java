@@ -149,7 +149,6 @@ public class Server {
         response.type("application/json");
         sessionHandler.authorizeUser(authToken, response);
         gameHandler.joinGame(bodyObj, authToken, response); // pass authToken in to later get the username
-        webSocketHandler.sendGame(bodyObj, authToken);
         return response.body();
     }
 

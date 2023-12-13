@@ -23,7 +23,7 @@ public class WebSocketHandler {
     private static final GameService gameService = new GameService();
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException {
+    public void onMessage(Session session, String message) throws IOException, DataAccessException {
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
         switch (action.getCommandType()) {
             case JOIN_PLAYER:
@@ -61,7 +61,7 @@ public class WebSocketHandler {
      * Adds a player to the game, if no color is specified, the player is an observer.
      * A notification is sent to all players in the game.
      */
-    private void joinGame(JoinPlayerCommand joinPlayerCommand, Session session) throws IOException {
+    private void joinGame(JoinPlayerCommand joinPlayerCommand, Session session) throws IOException, DataAccessException {
         var username = joinPlayerCommand.username();
         var gameID = joinPlayerCommand.gameID();
         var playerColor = joinPlayerCommand.playerColor();
@@ -70,15 +70,13 @@ public class WebSocketHandler {
         var message = String.format("%s joined game %d as %s", username, gameID, (playerColor == null ? "observer" : playerColor));
         var notification = new Notification(message);
         connections.broadcast(authToken, notification);
+        sendGame(gameID, authToken);
     }
 
     /**
      * Retrieves the game from the database and sends it to the client.
      */
-    public void sendGame(Map<String, Object> bodyObj, String authToken) throws DataAccessException, IOException {
-        bodyObj.put("authToken", authToken);
-        JoinGameRequest joinGameRequest = new Gson().fromJson(new Gson().toJson(bodyObj), JoinGameRequest.class);
-        var gameID = joinGameRequest.gameID();
+    private void sendGame(int gameID, String authToken) throws DataAccessException, IOException {
         var message = new Gson().toJson(gameService.loadGame(gameID));
         var notification = new LoadGameMessage(message);
         connections.send(authToken, notification);
