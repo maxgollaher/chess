@@ -75,4 +75,8 @@ public class SessionService {
             throw new DataAccessException("unauthorized");
         }
     }
+
+    public AuthToken getUser(String authToken) throws DataAccessException {
+        return authTokenDao.find(authToken);
+    }
 }

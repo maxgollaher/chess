@@ -35,6 +35,8 @@ public class Game {
      * @see ChessGame
      */
     private ChessGame game;
+    boolean gameOver = false;
+    private String winner;
 
     /**
      * Creates a new Game object.
@@ -120,5 +122,10 @@ public class Game {
                 ", gameName: '" + gameName + '\'' +
                 ", game: " + game +
                 '}';
+    }
+
+    public void resign(String username) {
+        this.gameOver = true;
+        this.winner = (Objects.equals(username, this.whiteUsername) ? this.blackUsername : this.whiteUsername);
     }
 }

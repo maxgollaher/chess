@@ -143,7 +143,7 @@ public class Server {
      * @param response the response object.
      * @return the response body.
      */
-    private Object joinGame(Request request, Response response) throws DataAccessException, IOException {
+    private Object joinGame(Request request, Response response) throws DataAccessException {
         var authToken = getHeader(request);
         var bodyObj = getBody(request);
         response.type("application/json");

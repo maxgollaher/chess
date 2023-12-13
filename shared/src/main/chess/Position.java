@@ -32,7 +32,8 @@ public class Position implements ChessPosition {
 
     @Override
     public String toString() {
-        return "(" + row + ", " + column + ')';
+        var column = (char) ('a' + this.column - 1);
+        return column + "" + row;
     }
 
     @Override
@@ -46,4 +47,5 @@ public class Position implements ChessPosition {
     public int hashCode() {
         return Objects.hash(row, column);
     }
+
 }

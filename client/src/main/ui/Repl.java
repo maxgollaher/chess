@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessGame;
 import chess.ChessPiece;
+import exception.ResponseException;
 import models.ModelSerializer;
 import ui.websocket.NotificationHandler;
 import webSocketMessages.LoadGameMessage;
@@ -15,7 +16,7 @@ public class Repl implements NotificationHandler {
 
     private final ChessClient client;
 
-    public Repl(String serverUrl) {
+    public Repl(String serverUrl) throws ResponseException {
         client = new ChessClient(serverUrl, this);
     }
 
@@ -55,8 +56,9 @@ public class Repl implements NotificationHandler {
      */
     @Override
     public void loadGame(LoadGameMessage loadGameMessage) {
-        models.Game game = ModelSerializer.deserialize(loadGameMessage.message(), models.Game.class);
-        System.out.println(getJoinGameBoard(game.getGame(), client.teamColor));
+        models.Game game = ModelSerializer.deserialize(loadGameMessage.game(), models.Game.class);
+        String board = getJoinGameBoard(game.getGame(), client.teamColor);
+        System.out.println("\n" + board);
         printPrompt();
     }
 
@@ -120,4 +122,9 @@ public class Repl implements NotificationHandler {
         };
     }
 
+    @Override
+    public void error(webSocketMessages.ErrorMessage errorMessage) {
+        System.out.print(RED + errorMessage.errorMessage());
+        printPrompt();
+    }
 }

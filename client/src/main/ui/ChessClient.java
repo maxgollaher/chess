@@ -1,7 +1,6 @@
 package ui;
 
-import chess.ChessGame;
-import chess.ChessPiece;
+import chess.*;
 import exception.ResponseException;
 import models.Game;
 import server.ServerFacade;
@@ -26,9 +25,10 @@ public class ChessClient {
     private boolean gameOver;
 
     protected ChessGame.TeamColor teamColor;
+    private int gameID;
 
 
-    public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
+    public ChessClient(String serverUrl, NotificationHandler notificationHandler) throws ResponseException {
         this.server = new ServerFacade(serverUrl);
         this.serverURl = serverUrl;
         this.notificationHandler = notificationHandler;
@@ -70,12 +70,33 @@ public class ChessClient {
     private String resign() throws ResponseException {
         assertWebSocket();
         ws.resign(authToken, username);
-        gameOver = true;
         return "Resigned";
     }
 
-    private String makeMove(String[] params) {
-        return null;
+    private String makeMove(String[] params) throws ResponseException {
+        assertWebSocket();
+        var move = parseMove(params);
+        ws.makeMove(authToken, gameID, move);
+        return "";
+    }
+
+    private ChessMove parseMove(String[] params) throws ResponseException {
+        if (params.length < 1) {
+            throw new ResponseException(400, "Expected: <MOVE>");
+        }
+        var moveString = params[0];
+        var from = parsePosition(moveString.substring(0, 2));
+        var to = parsePosition(moveString.substring(2, 4));
+        var promotion = (moveString.length() > 4) ?
+                ChessPiece.PieceType.valueOf(moveString.substring(4).toUpperCase()) : null;
+        return new Move(from, to, promotion);
+    }
+
+    private Position parsePosition(String position) throws ResponseException {
+        position = position.toLowerCase();
+        var col = position.charAt(0) - 'a' + 1;
+        var row = Character.getNumericValue(position.charAt(1));
+        return new Position(row, col);
     }
 
     private String leaveGame() throws ResponseException {
@@ -192,7 +213,7 @@ public class ChessClient {
         if (params.length < 1) {
             throw new ResponseException(400, "Expected: <ID> [WHITE|BLACK|<empty>]");
         }
-        int gameID = parseGameID(params[0]);
+        this.gameID = parseGameID(params[0]);
         ChessGame.TeamColor playerColor = getPlayerColor(params);
         this.teamColor = playerColor;
         server.joinGame(gameID, playerColor, authToken);
@@ -202,7 +223,6 @@ public class ChessClient {
             state = State.IN_GAME;
         }
 
-        // TODO: connect to websocket using another joinGame method to get the actual game board
         this.ws = new WebSocketFacade(serverURl, notificationHandler);
         ws.joinPlayer(gameID, playerColor, username, authToken);
         return String.format("Joined game with ID: %d", gameID);

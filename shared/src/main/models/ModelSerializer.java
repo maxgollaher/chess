@@ -2,6 +2,7 @@ package models;
 
 import chess.ChessGame;
 import chess.ChessPiece;
+import chess.ChessPosition;
 import chess.Game;
 import com.google.gson.*;
 import responses.ListGamesResponse;
@@ -27,6 +28,7 @@ public class ModelSerializer {
         gsonBuilder.registerTypeAdapter(chess.Board.class, new ChessBoardAdapter());
         gsonBuilder.registerTypeAdapter(chess.Piece.class, new ChessPieceAdapter());
         gsonBuilder.registerTypeAdapter(ListGamesResponse.class, new ListGamesResponseAdapter());
+        gsonBuilder.registerTypeAdapter(chess.ChessMove.class, new ChessMoveAdapter());
         return gsonBuilder.create().fromJson(reader, responseClass);
     }
 
@@ -43,6 +45,18 @@ public class ModelSerializer {
         builder.registerTypeAdapter(chess.Piece.class, new ChessPieceAdapter());
         var gson = builder.create();
         return gson.fromJson(resultSet.getString("game"), chess.Game.class);
+    }
+
+    public static class ChessMoveAdapter implements JsonDeserializer<chess.ChessMove> {
+
+        @Override
+        public chess.ChessMove deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            var jsonObject = jsonElement.getAsJsonObject();
+            var start = jsonDeserializationContext.deserialize(jsonObject.get("startPosition"), chess.Position.class);
+            var end = jsonDeserializationContext.deserialize(jsonObject.get("endPosition"), chess.Position.class);
+            var promotionPiece = jsonDeserializationContext.deserialize(jsonObject.get("promotionPiece"), chess.Piece.PieceType.class);
+            return new chess.Move((ChessPosition) start, (ChessPosition) end, (ChessPiece.PieceType) promotionPiece);
+        }
     }
 
     public static class ListGamesResponseAdapter implements JsonDeserializer<ListGamesResponse> {

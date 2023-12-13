@@ -22,7 +22,12 @@ public class Move implements ChessMove {
 
     @Override
     public String toString() {
-        return "Move{" + startPosition + ", " + endPosition + ", promotionPiece=" + promotionPiece + '}';
+        var start = startPosition.toString();
+        var end = endPosition.toString();
+        if (promotionPiece != null) {
+            return start + " moved to " + end + " and was promoted to " + promotionPiece;
+        }
+        return start + " moved to " + end;
     }
 
     /**

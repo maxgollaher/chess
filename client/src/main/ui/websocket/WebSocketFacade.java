@@ -2,7 +2,7 @@ package ui.websocket;
 
 
 import chess.ChessGame;
-import chess.Game;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import webSocketMessages.*;
@@ -22,7 +22,6 @@ public class WebSocketFacade extends Endpoint {
 
     public WebSocketFacade(String url, NotificationHandler notificationHandler) throws ResponseException {
         try {
-//            url = url.replace("http", "ws");
             URI socketURI = new URI("ws://localhost:8080/connect");
             this.notificationHandler = notificationHandler;
 
@@ -36,11 +35,12 @@ public class WebSocketFacade extends Endpoint {
                     switch (serverMessage.getServerMessageType()){
                         case NOTIFICATION -> notificationHandler.notify(new Gson().fromJson(message, Notification.class));
                         case LOAD_GAME -> notificationHandler.loadGame(new Gson().fromJson(message, LoadGameMessage.class));
+                        case ERROR -> notificationHandler.error(new Gson().fromJson(message, ErrorMessage.class));
                     }
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException e) {
-            throw new ResponseException(500, e.getMessage());
+            throw new ResponseException(500, "Error: " + e.getMessage());
         }
     }
 
@@ -72,6 +72,15 @@ public class WebSocketFacade extends Endpoint {
     public void resign(String authToken, String username) throws ResponseException {
         try {
             var action = new ResignCommand(authToken, username);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (IOException e) {
+            throw new ResponseException(500, e.getMessage());
+        }
+    }
+
+    public void makeMove(String authToken, int gameID, ChessMove move) throws ResponseException {
+        try {
+            var action = new MoveCommand(authToken, gameID, move);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException e) {
             throw new ResponseException(500, e.getMessage());

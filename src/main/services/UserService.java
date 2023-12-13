@@ -49,4 +49,8 @@ public class UserService {
         authTokenDao.insert(authToken);
         return new LoginResponse(authToken.getUsername(), authToken.getAuthToken());
     }
+
+    public User getUser(String username) throws DataAccessException {
+        return userDao.find(username);
+    }
 }
