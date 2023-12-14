@@ -154,14 +154,12 @@ public class Game {
 
         StringBuilder sb = new StringBuilder();
         if (game.isInCheckmate(game.getTeamTurn())) {
-            winner = game.getTeamTurn() == ChessGame.TeamColor.WHITE ? blackUsername: whiteUsername;
+            winner = game.getTeamTurn() == ChessGame.TeamColor.WHITE ? blackUsername : whiteUsername;
             gameOver = true;
             sb.append("Checkmate! ");
-        }
-        if (game.isInCheck(game.getTeamTurn())) {
+        } else if (game.isInCheck(game.getTeamTurn())) {
             sb.append("Check! ");
-        }
-        if (game.isInStalemate(game.getTeamTurn())) {
+        } else if (game.isInStalemate(game.getTeamTurn())) {
             gameOver = true;
             sb.append("Stalemate! ");
         }
