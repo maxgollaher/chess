@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPiece;
 import exception.ResponseException;
 import models.ModelSerializer;
@@ -8,6 +9,8 @@ import ui.websocket.NotificationHandler;
 import webSocketMessages.LoadGameMessage;
 import webSocketMessages.Notification;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -57,7 +60,31 @@ public class Repl implements NotificationHandler {
     @Override
     public void loadGame(LoadGameMessage loadGameMessage) {
         models.Game game = ModelSerializer.deserialize(loadGameMessage.game(), models.Game.class);
-        String board = getJoinGameBoard(game.getGame(), client.teamColor);
+        client.game(game);
+        String board = getJoinGameBoard(game.getGame(), client.teamColor, null);
+        client.board(board);
+        System.out.println("\n" + board);
+        printPrompt();
+    }
+
+    @Override
+    public void highlightMoves(Collection<ChessMove> moves, ChessGame game) {
+        String board = getJoinGameBoard(game, client.teamColor, moves);
+        System.out.println("\n" + board);
+        printPrompt();
+    }
+
+    @Override
+    public void error(webSocketMessages.ErrorMessage errorMessage) {
+        System.out.print(RED + errorMessage.errorMessage());
+        printPrompt();
+    }
+
+    /**
+     * Draws the board upon request from the client.
+     */
+    @Override
+    public void drawBoard(String board) {
         System.out.println("\n" + board);
         printPrompt();
     }
@@ -65,20 +92,20 @@ public class Repl implements NotificationHandler {
     /**
      * Returns a string representation of the board in the correct orientation.
      */
-    private String getJoinGameBoard(ChessGame game, ChessGame.TeamColor playerColor) {
+    private String getJoinGameBoard(ChessGame game, ChessGame.TeamColor playerColor, Collection<ChessMove> moves) {
         var sb = new StringBuilder();
         var chessBoard = game.getBoard();
         if (playerColor == ChessGame.TeamColor.BLACK) {
-            sb.append(printBoard(chessBoard, ChessGame.TeamColor.BLACK));
+            sb.append(printBoard(chessBoard, ChessGame.TeamColor.BLACK, moves));
         } else {
-            sb.append(printBoard(chessBoard, ChessGame.TeamColor.WHITE));
+            sb.append(printBoard(chessBoard, ChessGame.TeamColor.WHITE, moves));
         }
         return sb.toString();
     }
-    
-    private String printBoard(chess.ChessBoard board, ChessGame.TeamColor playerColor) {
+
+    private String printBoard(chess.ChessBoard board, ChessGame.TeamColor playerColor, Collection<ChessMove> moves) {
         var sb = new StringBuilder();
-        var currentBG = playerColor == ChessGame.TeamColor.WHITE ? BG_WHITE : BG_BLACK; // a1 is black
+        var currentBG = BG_WHITE; // a1 is black
         var letters = playerColor == ChessGame.TeamColor.WHITE ? "    a  b  c  d  e  f  g  h    " : "    h  g  f  e  d  c  b  a    ";
         sb.append(BG_LIGHT_GRAY + BLACK + BOLD).append(letters).append(RESET_BG_COLOR).append('\n');
 
@@ -86,10 +113,24 @@ public class Repl implements NotificationHandler {
         int endRow = playerColor == ChessGame.TeamColor.WHITE ? 0 : 9;
         int rowIncrement = playerColor == ChessGame.TeamColor.WHITE ? -1 : 1;
 
+        moves = moves == null ? new HashSet<>() : moves;
+        var highlightedPositions = new HashSet<chess.ChessPosition>();
+        for (var move : moves) {
+            highlightedPositions.add(move.getEndPosition());
+        }
+
         for (int i = startRow; i != endRow; i += rowIncrement) {
             sb.append(BG_LIGHT_GRAY + BLACK + BOLD).append(" ").append(i).append(" ").append(RESET_BG_COLOR);
             for (int j = 1; j <= 8; j++) {
-                sb.append(currentBG);
+                var currentPos = playerColor == ChessGame.TeamColor.WHITE ? new chess.Position(i, j) : new chess.Position(i, 9 - j);
+
+                // highlight the current position if it is a valid move
+                if (highlightedPositions.contains(currentPos)) {
+                    sb.append(BG_YELLOW);
+                } else {
+                    sb.append(currentBG);
+                }
+
                 var position = playerColor == ChessGame.TeamColor.WHITE ? new chess.Position(i, j) : new chess.Position(i, 9 - j);
                 var piece = board.getPiece(position);
                 var pieceString = piece == null ? "   " : pieceToUnicode(piece);
@@ -120,11 +161,5 @@ public class Repl implements NotificationHandler {
             case QUEEN -> " Q ";
             case KING -> " K ";
         };
-    }
-
-    @Override
-    public void error(webSocketMessages.ErrorMessage errorMessage) {
-        System.out.print(RED + errorMessage.errorMessage());
-        printPrompt();
     }
 }

@@ -1,6 +1,9 @@
 package models;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
+import webSocketMessages.Notification;
 
 import java.util.Objects;
 
@@ -35,7 +38,7 @@ public class Game {
      * @see ChessGame
      */
     private ChessGame game;
-    boolean gameOver = false;
+    private boolean gameOver = false;
     private String winner;
 
     /**
@@ -51,10 +54,11 @@ public class Game {
 
     /**
      * Creates a new Game object.
-     * @param gameID the id of the game.
+     *
+     * @param gameID        the id of the game.
      * @param whiteUsername the username of the white player.
      * @param blackUsername the username of the black player.
-     * @param gameName the name of the game.
+     * @param gameName      the name of the game.
      */
     public Game(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {
         this.gameID = gameID;
@@ -100,17 +104,33 @@ public class Game {
         this.game = game;
     }
 
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean b) {
+        this.gameOver = b;
+    }
+
+    public String getWinner() {
+        return winner;
+    }
+
+    public void setWinner(String s) {
+        this.winner = s;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(gameID, whiteUsername, blackUsername, gameName, game);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Game game1 = (Game) o;
         return gameID == game1.gameID && Objects.equals(whiteUsername, game1.whiteUsername) && Objects.equals(blackUsername, game1.blackUsername) && Objects.equals(gameName, game1.gameName) && Objects.equals(game, game1.game);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(gameID, whiteUsername, blackUsername, gameName, game);
     }
 
     @Override
@@ -127,5 +147,25 @@ public class Game {
     public void resign(String username) {
         this.gameOver = true;
         this.winner = (Objects.equals(username, this.whiteUsername) ? this.blackUsername : this.whiteUsername);
+    }
+
+    public Notification makeMove(ChessMove move, String username) throws InvalidMoveException {
+        this.game.makeMove(move);
+
+        StringBuilder sb = new StringBuilder();
+        if (game.isInCheckmate(game.getTeamTurn())) {
+            winner = game.getTeamTurn() == ChessGame.TeamColor.WHITE ? blackUsername: whiteUsername;
+            gameOver = true;
+            sb.append("Checkmate! ");
+        }
+        if (game.isInCheck(game.getTeamTurn())) {
+            sb.append("Check! ");
+        }
+        if (game.isInStalemate(game.getTeamTurn())) {
+            gameOver = true;
+            sb.append("Stalemate! ");
+        }
+        sb.append(String.format("%s made move: %s", username, move.toString()));
+        return new Notification(sb.toString());
     }
 }

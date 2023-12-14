@@ -2,10 +2,10 @@ package server.websocket;
 
 
 import chess.ChessGame;
-import chess.Game;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
+import models.Game;
 import models.ModelSerializer;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -35,7 +35,7 @@ public class WebSocketHandler {
                 switch (command.getCommandType()) {
                     case JOIN_PLAYER, JOIN_OBSERVER -> join(conn, message);
                     case MAKE_MOVE -> move(conn, message);
-                    case LEAVE -> leave(conn, message);
+                    case LEAVE -> leave(message);
                     case RESIGN -> resign(conn, message);
                 }
             } else {
@@ -46,12 +46,26 @@ public class WebSocketHandler {
         }
     }
 
+    /**
+     * Makes a move in the game.
+     * A notification is sent to all players in the game, excluding the player who made the move.
+     * Game boards are updated across connections.
+     */
     private void move(Connection conn, String message) throws InvalidMoveException, IOException, DataAccessException {
         var moveCommand = ModelSerializer.deserialize(message, MoveCommand.class);
         var authToken = moveCommand.getAuthString();
         var move = moveCommand.move();
         var gameID = moveCommand.gameID();
         var game = conn.game;
+        var actualPlayer = assertCorrectPlayer(conn, gameID, game, authToken);
+        assertGameIsNotOver(game);
+        var notification = game.makeMove(move, actualPlayer);
+        sendGame(game); // send the updated game to all players
+        conn.game = game;
+        connections.broadcast(authToken, notification);
+    }
+
+    private static String assertCorrectPlayer(Connection conn, int gameID, Game game, String authToken) throws DataAccessException {
         if (conn.game == null || gameID != conn.game.getGameID()) {
             throw new RuntimeException("You are not connected to this game");
         }
@@ -60,13 +74,22 @@ public class WebSocketHandler {
         if (!expectedPlayer.equals(actualPlayer)) {
             throw new RuntimeException("It is not your turn");
         }
+        return actualPlayer;
+    }
 
-        game.getGame().makeMove(move);
-        sendGame(game); // send the updated game to all players
+    private void assertGameIsNotOver(Game game) {
+        if (game.isGameOver()) {
+            throw new RuntimeException("The game is over");
+        }
+    }
 
-        var notification = new Notification(move.toString());
-        connections.broadcast(authToken, notification);
-
+    /**
+     * Sends the game to all players in the game.
+     */
+    private void sendGame(models.Game game) throws IOException {
+        var message = new Gson().toJson(game);
+        var notification = new LoadGameMessage(message);
+        connections.broadcast(null, notification);
     }
 
     private Connection getConnection(String authToken, Session session) {
@@ -77,22 +100,38 @@ public class WebSocketHandler {
         return conn;
     }
 
-
-    private void resign(Connection connection, String message) throws IOException {
+    /**
+     * Resigns the player from the game.
+     * A notification is sent to all players in the game.
+     */
+    private void resign(Connection connection, String message) throws IOException, DataAccessException {
         var resignCommand = new Gson().fromJson(message, ResignCommand.class);
-        var username = resignCommand.username();
         var authToken = resignCommand.getAuthString();
-        connection.game.resign(username);
+        // retrieve the username from the database if it is not given, because the tests don't provide it
+        var username = resignCommand.username() == null ? sessionService.getUser(authToken).getUsername() : resignCommand.username();
+        if (!connection.game.getWhiteUsername().equals(username) && !connection.game.getBlackUsername().equals(username)) {
+            throw new RuntimeException("You are not a current player");
+        }
+        assertGameIsNotOver(connection.game);
         var msg = String.format("%s resigned", username);
         var notification = new Notification(msg);
-        connections.broadcast(authToken, notification);
+        connections.broadcast(null, notification);
+        for (var conn : connections.connections.values()) {
+            if (conn.game != null && conn.game.getGameID() == connection.game.getGameID()) {
+                conn.game.setGameOver(true);
+            }
+        }
+        connection.game.resign(username);
     }
 
-    private void leave(Connection connection, String message) throws IOException {
+    /**
+     * Removes the player from the game.
+     * A notification is sent to all players in the game.
+     */
+    private void leave(String message) throws IOException {
         var leaveGameCommand = new Gson().fromJson(message, LeaveGameCommand.class);
         var username = leaveGameCommand.username();
         var authToken = leaveGameCommand.getAuthString();
-        connection.session.close();
         connections.remove(authToken);
         var msg = String.format("%s left the game", username);
         var notification = new Notification(msg);
@@ -127,6 +166,19 @@ public class WebSocketHandler {
         var notification = new Notification(msg);
         connections.broadcast(authToken, notification);
         sendGame(game, authToken);
+
+        // update the game in all connections
+        if (playerColor != null) {
+            for (var conn : connections.connections.values()) {
+                if (conn.game != null && conn.game.getGameID() == connection.game.getGameID()) {
+                    switch (playerColor) {
+                        case WHITE -> conn.game.setWhiteUsername(username);
+                        case BLACK -> conn.game.setBlackUsername(username);
+                    }
+                }
+            }
+        }
+
     }
 
     /**
@@ -136,14 +188,5 @@ public class WebSocketHandler {
         var message = new Gson().toJson(game);
         var notification = new LoadGameMessage(message);
         connections.send(authToken, notification);
-    }
-
-    /**
-     * Sends the game to all players in the game.
-     */
-    private void sendGame(models.Game game) throws IOException {
-        var message = new Gson().toJson(game);
-        var notification = new LoadGameMessage(message);
-        connections.broadcast(null, notification);
     }
 }

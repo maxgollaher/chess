@@ -1,6 +1,7 @@
 package daoTests;
 
 import dataAccess.DataAccessException;
+import dataAccess.GameDao;
 import dataAccess.UserDao;
 import models.User;
 import org.junit.jupiter.api.Assertions;
@@ -8,12 +9,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+
 public class UserDaoTest {
 
     private static final UserDao userDao;
+    private static final GameDao gameDao;
 
     static {
         try {
+            gameDao = new GameDao();
             userDao = new UserDao();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -22,6 +26,7 @@ public class UserDaoTest {
 
     @BeforeEach
     void setup() {
+        Assertions.assertDoesNotThrow(gameDao::clear);
         Assertions.assertDoesNotThrow(userDao::clear);
     }
 

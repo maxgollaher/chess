@@ -49,7 +49,9 @@ public class ConnectionManager {
         if (connection.session.isOpen()) {
             connection.send(new Gson().toJson(message));
         }
-
+        if (message instanceof LoadGameMessage) {
+            connection.game = ModelSerializer.deserialize(((LoadGameMessage) message).game(), models.Game.class);
+        }
     }
 
     public Connection get(String authToken) {

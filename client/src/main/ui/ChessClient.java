@@ -17,21 +17,29 @@ public class ChessClient {
     private final ServerFacade server;
     private final String serverURl;
     private final NotificationHandler notificationHandler;
+    protected ChessGame.TeamColor teamColor;
     private State state = State.SIGNED_OUT;
     private String authToken;
     private String username;
     private ArrayList<Game> games;
     private WebSocketFacade ws;
-    private boolean gameOver;
-
-    protected ChessGame.TeamColor teamColor;
     private int gameID;
 
+    private chess.ChessGame game;
+    private String board;
 
     public ChessClient(String serverUrl, NotificationHandler notificationHandler) throws ResponseException {
         this.server = new ServerFacade(serverUrl);
         this.serverURl = serverUrl;
         this.notificationHandler = notificationHandler;
+    }
+
+    public void game(models.Game game) {
+        this.game = game.getGame();
+    }
+
+    public void board(String board) {
+        this.board = board;
     }
 
     /**
@@ -49,7 +57,7 @@ public class ChessClient {
                 case "create" -> createGame(params);
                 case "list" -> listGames();
                 case "join", "observe" -> joinGame(params);
-                case "redraw" -> drawGame();
+                case "redraw" -> redraw();
                 case "leave" -> leaveGame();
                 case "make" -> makeMove(params);
                 case "resign" -> resign();
@@ -63,8 +71,12 @@ public class ChessClient {
         }
     }
 
-    private String highlight(String[] params) {
-        return null;
+    private String highlight(String[] params) throws ResponseException {
+        assertWebSocket();
+        var position = parsePosition(params[0]);
+        var moves = game.validMoves(position);
+        notificationHandler.highlightMoves(moves, game);
+        return "";
     }
 
     private String resign() throws ResponseException {
@@ -101,7 +113,6 @@ public class ChessClient {
 
     private String leaveGame() throws ResponseException {
         assertWebSocket();
-        assertGameOver();
         state = State.SIGNED_IN;
         ws.leaveGame(authToken, username);
         ws = null;
@@ -114,15 +125,12 @@ public class ChessClient {
         }
     }
 
-    private void assertGameOver() throws ResponseException {
-        if (!gameOver) {
-            throw new ResponseException(400, "You must resign first");
-        }
-
-    }
-
-    private String drawGame() {
-        return null;
+    /*
+     * Sends a redraw request to the Repl
+     */
+    private String redraw() {
+        notificationHandler.drawBoard(board);
+        return "";
     }
 
     private String clear() throws ResponseException {
